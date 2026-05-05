@@ -1,4 +1,41 @@
 package com.upc.finexia.entities;
 
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDate;
+@Entity
+@Table(name = "notificaciones")
+@Getter
+@Setter
+@NoArgsConstructor @AllArgsConstructor
 public class Notificacion {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
+
+    @Column(nullable = false, length = 150)
+    private String titulo;
+
+    @Column(nullable = false, length = 500)
+    private String mensaje;
+
+    @Column(length = 30)
+    private String tipo;       // "ALERTA", "META", "INGRESO", etc.
+
+    @Column(nullable = false)
+    private Boolean leido;
+
+    @Column(name = "creado_en", nullable = false)
+    private LocalDate creadoEn;
+
 }
