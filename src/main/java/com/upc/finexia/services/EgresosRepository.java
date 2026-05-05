@@ -1,4 +1,4 @@
-package com.upc.finexia.Services;
+package com.upc.finexia.services;
 
 public class EgresosRepository {
 }
