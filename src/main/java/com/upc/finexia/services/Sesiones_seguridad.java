@@ -1,4 +1,4 @@
-package com.upc.finexia.entities;
+package com.upc.finexia.services;
 
 public class Sesiones_seguridad {
 }

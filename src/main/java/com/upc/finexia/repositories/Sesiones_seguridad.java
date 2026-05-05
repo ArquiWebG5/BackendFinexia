@@ -1,4 +1,4 @@
-package com.upc.finexia.Repositories;
+package com.upc.finexia.repositories;
 
 public interface Sesiones_seguridad {
 }
