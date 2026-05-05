@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class Egresos {
+public class Egreso {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
