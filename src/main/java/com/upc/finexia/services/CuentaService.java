@@ -2,9 +2,9 @@ package com.upc.finexia.services;
 
 import com.upc.finexia.dtos.CuentaDTO;
 import com.upc.finexia.entities.Cuenta;
-import com.upc.finexia.entities.Usuario;
+import com.upc.finexia.entities.Usuarios;
 import com.upc.finexia.repositories.CuentaRepositorio;
-import com.upc.finexia.repositories.UsuarioRepositorio;
+import com.upc.finexia.repositories.UsuariosRepositorio;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,13 +20,13 @@ public class CuentaService {
     private CuentaRepositorio cuentaRepositorio;
 
     @Autowired
-    private UsuarioRepositorio usuarioRepositorio;
+    private UsuariosRepositorio usuariosRepositorio;
 
     @Autowired
     private ModelMapper modelMapper;
 
     public CuentaDTO insertar(CuentaDTO cuentaDTO) {
-        Usuario usuario = usuarioRepositorio.findById(cuentaDTO.getUsuarioId())
+        Usuarios usuario = usuariosRepositorio.findById(cuentaDTO.getUsuarioId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         Cuenta cuenta = modelMapper.map(cuentaDTO, Cuenta.class);
         cuenta.setUsuario(usuario);
@@ -37,7 +37,7 @@ public class CuentaService {
     }
 
     public List<CuentaDTO> listarPorUsuario(Long usuarioId) {
-        return cuentaRepositorio.findByUsuarioId(usuarioId).stream()
+        return cuentaRepositorio.findByUsuarioIdUsuario(usuarioId).stream() // ✅ corregido aquí
                 .map(c -> modelMapper.map(c, CuentaDTO.class))
                 .collect(Collectors.toList());
     }

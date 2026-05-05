@@ -14,14 +14,14 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Meta {
+public class Metas {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
+    private Usuarios usuario;
 
     @Column(nullable = false, length = 150)
     private String nombre; // <-- ESTE NOMBRE GENERA EL MÉTODO setNombre()

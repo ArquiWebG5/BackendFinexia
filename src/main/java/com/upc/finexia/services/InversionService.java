@@ -1,11 +1,14 @@
 package com.upc.finexia.services;
 
 import com.upc.finexia.dtos.InversionDTO;
-import com.upc.finexia.entities.Inversion;
-import com.upc.finexia.repositories.InversionRepositorio;
+import com.upc.finexia.entities.Cuenta;
+import com.upc.finexia.entities.Inversiones;
+import com.upc.finexia.repositories.InversionesRepositorio;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.upc.finexia.repositories.CuentaRepositorio;
+import java.util.stream.Collectors;
 
 import java.util.List;
 
@@ -13,36 +16,36 @@ import java.util.List;
 public class InversionService {
 
     @Autowired
-    private InversionRepositorio inversionRepositorio;
+    private InversionesRepositorio inversionesRepositorio;
+
+    @Autowired
+    private CuentaRepositorio cuentaRepositorio;
 
     @Autowired
     private ModelMapper modelMapper;
 
     public InversionDTO insertar(InversionDTO inversionDTO) {
-        // Convertimos DTO a Entidad para que el Repo pueda guardarlo
-        Inversion entidad = modelMapper.map(inversionDTO, Inversion.class);
-        Inversion guardada = inversionRepositorio.save(entidad);
-        // Retornamos el DTO
-        return modelMapper.map(guardada, InversionDTO.class);
+        Cuenta cuenta = cuentaRepositorio.findById(inversionDTO.getCuentaId())
+                .orElseThrow(() -> new RuntimeException("Cuenta no encontrada"));
+        Inversiones entidad = modelMapper.map(inversionDTO, Inversiones.class);
+        entidad.setCuenta(cuenta);
+        return modelMapper.map(inversionesRepositorio.save(entidad), InversionDTO.class);
     }
 
     public List<InversionDTO> listarPorCuenta(Long cuentaId) {
-        // El repositorio ya devuelve la lista de DTOs directamente
-        return inversionRepositorio.findByCuentaId(cuentaId);
+        return inversionesRepositorio.findByCuentaIdCuenta(cuentaId).stream() // ✅
+                .map(i -> modelMapper.map(i, InversionDTO.class))
+                .collect(Collectors.toList());
     }
 
     public InversionDTO actualizar(Long id, InversionDTO inversionDTO) {
-        Inversion entidad = inversionRepositorio.findById(id)
+        Inversiones entidad = inversionesRepositorio.findById(id)
                 .orElseThrow(() -> new RuntimeException("Inversión no encontrada"));
-
-        // IMPORTANTE: Usa los nombres de campos reales de tu entidad aquí
-        // entidad.setCampoReal(inversionDTO.getCampoReal());
-
-        Inversion actualizada = inversionRepositorio.save(entidad);
+        Inversiones actualizada = inversionesRepositorio.save(entidad);
         return modelMapper.map(actualizada, InversionDTO.class);
     }
 
     public void eliminar(Long id) {
-        inversionRepositorio.deleteById(id);
+        inversionesRepositorio.deleteById(id);
     }
 }

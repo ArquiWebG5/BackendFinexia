@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface CuentaRepositorio extends JpaRepository<Cuenta, Long> {
-    List<CuentaDTO> findByUsuarioId(Long usuarioId);
+    List<Cuenta> findByUsuarioIdUsuario(Long idUsuario); // ✅
 }

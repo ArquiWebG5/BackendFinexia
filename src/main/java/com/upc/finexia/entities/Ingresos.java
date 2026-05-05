@@ -1,20 +1,17 @@
 package com.upc.finexia.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "egresos")
-@Getter @Setter
+@Table(name = "ingresos")
+@Setter
+@Getter
 @NoArgsConstructor
-@AllArgsConstructor
-
-public class Egreso {
+@AllArgsConstructor @Builder
+public class Ingresos {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,14 +27,14 @@ public class Egreso {
     @Column(nullable = false)
     private LocalDate fecha;
 
-    @Column(length = 500)
-    private String comprobante;
-
     @Column(length = 20)
     private String categoria;
 
     @Column(length = 250)
     private String nota;
+
+    @Column(length = 500)
+    private String comprobante;
 
     @Column(name = "creado_en", nullable = false)
     private LocalDate creadoEn;

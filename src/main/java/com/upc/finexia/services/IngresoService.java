@@ -2,9 +2,9 @@ package com.upc.finexia.services;
 
 import com.upc.finexia.dtos.IngresoDTO;
 import com.upc.finexia.entities.Cuenta;
-import com.upc.finexia.entities.Ingreso;
+import com.upc.finexia.entities.Ingresos;
 import com.upc.finexia.repositories.CuentaRepositorio;
-import com.upc.finexia.repositories.IngresoRepositorio;
+import com.upc.finexia.repositories.IngresosRepositorio;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class IngresoService {
 
     @Autowired
-    private IngresoRepositorio ingresoRepositorio;
+    private IngresosRepositorio ingresosRepositorio;
 
     @Autowired
     private CuentaRepositorio cuentaRepositorio;
@@ -28,42 +28,42 @@ public class IngresoService {
     public IngresoDTO insertar(IngresoDTO ingresoDTO) {
         Cuenta cuenta = cuentaRepositorio.findById(ingresoDTO.getCuentaId())
                 .orElseThrow(() -> new RuntimeException("Cuenta no encontrada"));
-        Ingreso ingreso = modelMapper.map(ingresoDTO, Ingreso.class);
-        ingreso.setCuenta(cuenta);
-        ingreso.setCreadoEn(LocalDate.now());
-        return modelMapper.map(ingresoRepositorio.save(ingreso), IngresoDTO.class);
+        Ingresos ingresos = modelMapper.map(ingresoDTO, Ingresos.class);
+        ingresos.setCuenta(cuenta);
+        ingresos.setCreadoEn(LocalDate.now());
+        return modelMapper.map(ingresosRepositorio.save(ingresos), IngresoDTO.class);
     }
 
-    public List<IngresoDTO> listarPorCuenta(Long cuentaId) { // US09
-        return ingresoRepositorio.findByCuentaId(cuentaId).stream()
+    public List<IngresoDTO> listarPorCuenta(Long cuentaId) {
+        return ingresosRepositorio.findByCuentaIdCuenta(cuentaId).stream() // ✅
                 .map(i -> modelMapper.map(i, IngresoDTO.class))
                 .collect(Collectors.toList());
     }
 
     public List<IngresoDTO> listarPorCategoria(Long cuentaId, String categoria) {
-        return ingresoRepositorio.findByCuentaIdAndCategoria(cuentaId, categoria).stream()
+        return ingresosRepositorio.findByCuentaIdCuentaAndCategoria(cuentaId, categoria).stream() // ✅
                 .map(i -> modelMapper.map(i, IngresoDTO.class))
                 .collect(Collectors.toList());
     }
 
     public List<IngresoDTO> listarPorFechas(Long cuentaId, LocalDate desde, LocalDate hasta) {
-        return ingresoRepositorio.findByCuentaIdAndFechaBetween(cuentaId, desde, hasta).stream()
+        return ingresosRepositorio.findByCuentaIdCuentaAndFechaBetween(cuentaId, desde, hasta).stream() // ✅
                 .map(i -> modelMapper.map(i, IngresoDTO.class))
                 .collect(Collectors.toList());
     }
 
     public IngresoDTO actualizar(Long id, IngresoDTO ingresoDTO) {
-        Ingreso ingreso = ingresoRepositorio.findById(id)
+        Ingresos ingresos = ingresosRepositorio.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ingreso no encontrado"));
-        ingreso.setMonto(ingresoDTO.getMonto());
-        ingreso.setFecha(ingresoDTO.getFecha());
-        ingreso.setCategoria(ingresoDTO.getCategoria());
-        ingreso.setNota(ingresoDTO.getNota());
-        ingreso.setComprobante(ingresoDTO.getComprobante());
-        return modelMapper.map(ingresoRepositorio.save(ingreso), IngresoDTO.class);
+        ingresos.setMonto(ingresoDTO.getMonto());
+        ingresos.setFecha(ingresoDTO.getFecha());
+        ingresos.setCategoria(ingresoDTO.getCategoria());
+        ingresos.setNota(ingresoDTO.getNota());
+        ingresos.setComprobante(ingresoDTO.getComprobante());
+        return modelMapper.map(ingresosRepositorio.save(ingresos), IngresoDTO.class);
     }
 
     public void eliminar(Long id) {
-        ingresoRepositorio.deleteById(id);
+        ingresosRepositorio.deleteById(id);
     }
 }
