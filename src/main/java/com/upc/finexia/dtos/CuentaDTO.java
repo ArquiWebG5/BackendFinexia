@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class CuentaDTO {
     private Long id;
     private Long usuarioId;
-    private String nombreCuenta;
+    private String nombreCuenta; //EJ: BCP
     private String bancoNombre;
     private String tipoCuenta;
     private String moneda;
