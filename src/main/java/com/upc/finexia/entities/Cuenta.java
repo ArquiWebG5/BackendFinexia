@@ -10,18 +10,17 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "cuenta")
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter @Setter @AllArgsConstructor @NoArgsConstructor
 public class Cuenta {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id_cuenta")
+    private Long idCuenta;  // ✅ coincide con BD
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
+    @JoinColumn(name = "id_usuario", nullable = false)  // ✅ coincide con BD
+    private Usuarios usuario;
 
     @Column(name = "nombre_cuenta", nullable = false, length = 100)
     private String nombreCuenta;

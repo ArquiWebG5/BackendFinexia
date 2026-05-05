@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Table(name = "portafolios")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
-public class Portafolio {
+public class Portafolios {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +19,7 @@ public class Portafolio {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
+    private Usuarios usuario;
 
     @Column(name = "valor_total")
     private double valorTotal;
