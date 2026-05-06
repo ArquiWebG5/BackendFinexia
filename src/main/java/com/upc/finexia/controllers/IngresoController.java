@@ -1,8 +1,12 @@
 package com.upc.finexia.controllers;
 
 import com.upc.finexia.dtos.IngresoDTO;
+import com.upc.finexia.dtos.ReporteAnalisisAhorroDTO;
+import com.upc.finexia.dtos.ReporteIngresosRecurrentesDTO;
 import com.upc.finexia.services.IngresoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -47,4 +51,28 @@ public class IngresoController {
     public void eliminar(@PathVariable Long id) {
         ingresoService.eliminar(id);
     }
+
+    // REPORTES
+    //US34: Ingresos recurrentes
+
+    @GetMapping("/reporte/recurrentes/{cuentaId}")
+    public ResponseEntity<List<ReporteIngresosRecurrentesDTO>> ingresosRecurrentes(
+            @PathVariable Long cuentaId,
+            @RequestParam(defaultValue = "2") int minMeses) {
+        return new ResponseEntity<>(
+                ingresoService.ingresosRecurrentes(cuentaId, minMeses),
+                HttpStatus.OK);
+    }
+
+    //US30: Análisis de ahorro potencial
+
+
+     @GetMapping("/reporte/ahorro/{cuentaId}")
+    public ResponseEntity<List<ReporteAnalisisAhorroDTO>> analisisAhorro(
+            @PathVariable Long cuentaId) {
+        return new ResponseEntity<>(
+                ingresoService.analisisAhorro(cuentaId),
+                HttpStatus.OK);
+    }
+
 }
