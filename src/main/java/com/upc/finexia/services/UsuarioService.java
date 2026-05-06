@@ -2,7 +2,7 @@ package com.upc.finexia.services;
 
 import com.upc.finexia.dtos.UsuarioDTO;
 import com.upc.finexia.entities.Usuarios;
-import com.upc.finexia.repositories.UsuariosRepositorio;
+import com.upc.finexia.repositories.UsuarioRepositorio;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class UsuarioService {
 
     @Autowired
-    private UsuariosRepositorio usuariosRepositorio;
+    private UsuarioRepositorio usuariosRepositorio;
 
     @Autowired
     private ModelMapper modelMapper;

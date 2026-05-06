@@ -1,13 +1,13 @@
 package com.upc.finexia.services;
 
 import com.upc.finexia.dtos.MetaDTO;
-import com.upc.finexia.entities.Metas;
+import com.upc.finexia.entities.Meta;
 import com.upc.finexia.entities.Usuarios;
-import com.upc.finexia.repositories.MetasRepositorio;
+import com.upc.finexia.repositories.MetaRepositorio;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.upc.finexia.repositories.UsuariosRepositorio;
+import com.upc.finexia.repositories.UsuarioRepositorio;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,10 +16,10 @@ import java.util.stream.Collectors;
 public class MetaService {
 
     @Autowired
-    private MetasRepositorio metasRepositorio;
+    private MetaRepositorio metasRepositorio;
 
     @Autowired
-    private UsuariosRepositorio usuariosRepositorio;
+    private UsuarioRepositorio usuariosRepositorio;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -27,7 +27,7 @@ public class MetaService {
     public MetaDTO insertar(MetaDTO dto) {
         Usuarios usuario = usuariosRepositorio.findById(dto.getUsuarioId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        Metas entidad = modelMapper.map(dto, Metas.class);
+        Meta entidad = modelMapper.map(dto, Meta.class);
         entidad.setUsuario(usuario);
         return modelMapper.map(metasRepositorio.save(entidad), MetaDTO.class);
     }
@@ -39,7 +39,7 @@ public class MetaService {
     }
 
     public MetaDTO actualizar(Long id, MetaDTO dto) {
-        Metas entidad = metasRepositorio.findById(id)
+        Meta entidad = metasRepositorio.findById(id)
                 .orElseThrow(() -> new RuntimeException("Meta no encontrada"));
         entidad.setNombre(dto.getNombre());
         entidad.setMontoObjetivo(dto.getMontoObjetivo());

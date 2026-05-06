@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Inversiones {
+public class Inversion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

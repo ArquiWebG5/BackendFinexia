@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor @Builder
-public class Ingresos {
+public class Ingreso {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
