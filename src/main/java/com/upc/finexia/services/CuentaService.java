@@ -1,10 +1,11 @@
 package com.upc.finexia.services;
 
 import com.upc.finexia.dtos.CuentaDTO;
+import com.upc.finexia.dtos.ReporteResumenFinancieroDTO;
 import com.upc.finexia.entities.Cuenta;
 import com.upc.finexia.entities.Usuarios;
 import com.upc.finexia.repositories.CuentaRepositorio;
-import com.upc.finexia.repositories.UsuariosRepositorio;
+import com.upc.finexia.repositories.UsuarioRepositorio;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class CuentaService {
     private CuentaRepositorio cuentaRepositorio;
 
     @Autowired
-    private UsuariosRepositorio usuariosRepositorio;
+    private UsuarioRepositorio usuariosRepositorio;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -37,7 +38,7 @@ public class CuentaService {
     }
 
     public List<CuentaDTO> listarPorUsuario(Long usuarioId) {
-        return cuentaRepositorio.findByUsuarioIdUsuario(usuarioId).stream() // ✅ corregido aquí
+        return cuentaRepositorio.findByUsuarioIdUsuario(usuarioId).stream()
                 .map(c -> modelMapper.map(c, CuentaDTO.class))
                 .collect(Collectors.toList());
     }
@@ -61,5 +62,12 @@ public class CuentaService {
 
     public void eliminar(Long id) {
         cuentaRepositorio.deleteById(id);
+    }
+
+     //US32: Resumen financiero del usuario
+
+    public List<ReporteResumenFinancieroDTO> resumenFinanciero(
+            Long usuarioId, LocalDate desde, LocalDate hasta) {
+        return cuentaRepositorio.resumenFinancieroPorUsuario(usuarioId, desde, hasta);
     }
 }

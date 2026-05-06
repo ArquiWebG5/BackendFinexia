@@ -1,10 +1,10 @@
 package com.upc.finexia.services;
 
 import com.upc.finexia.dtos.NotificacionDTO;
-import com.upc.finexia.entities.Notificaciones;
+import com.upc.finexia.entities.Notificacion;
 import com.upc.finexia.entities.Usuarios;
-import com.upc.finexia.repositories.NotificacionesRepositorio;
-import com.upc.finexia.repositories.UsuariosRepositorio;
+import com.upc.finexia.repositories.NotificacionRepositorio;
+import com.upc.finexia.repositories.UsuarioRepositorio;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,10 +16,10 @@ import java.util.stream.Collectors;
 public class NotificacionService {
 
     @Autowired
-    private NotificacionesRepositorio notificacionesRepositorio;
+    private NotificacionRepositorio notificacionesRepositorio;
 
     @Autowired
-    private UsuariosRepositorio usuariosRepositorio;
+    private UsuarioRepositorio usuariosRepositorio;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -27,7 +27,7 @@ public class NotificacionService {
     public NotificacionDTO insertar(NotificacionDTO dto) {
         Usuarios usuario = usuariosRepositorio.findById(dto.getUsuarioId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        Notificaciones entidad = modelMapper.map(dto, Notificaciones.class);
+        Notificacion entidad = modelMapper.map(dto, Notificacion.class);
         entidad.setUsuario(usuario);
         return modelMapper.map(notificacionesRepositorio.save(entidad), NotificacionDTO.class);
     }
@@ -45,7 +45,7 @@ public class NotificacionService {
     }
 
     public void marcarLeida(Long id) {
-        Notificaciones n = notificacionesRepositorio.findById(id).orElseThrow();
+        Notificacion n = notificacionesRepositorio.findById(id).orElseThrow();
         n.setLeido(true);
         notificacionesRepositorio.save(n);
     }

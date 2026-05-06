@@ -1,10 +1,10 @@
 package com.upc.finexia.services;
 
 import com.upc.finexia.dtos.PortafolioDTO;
-import com.upc.finexia.entities.Portafolios;
+import com.upc.finexia.entities.Portafolio;
 import com.upc.finexia.entities.Usuarios;
-import com.upc.finexia.repositories.PortafoliosRepositorio;
-import com.upc.finexia.repositories.UsuariosRepositorio;
+import com.upc.finexia.repositories.PortafolioRepositorio;
+import com.upc.finexia.repositories.UsuarioRepositorio;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,10 +16,10 @@ import java.util.stream.Collectors;
 public class PortafolioService {
 
     @Autowired
-    private PortafoliosRepositorio portafoliosRepositorio;
+    private PortafolioRepositorio portafoliosRepositorio;
 
     @Autowired
-    private UsuariosRepositorio usuariosRepositorio;
+    private UsuarioRepositorio usuariosRepositorio;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -27,7 +27,7 @@ public class PortafolioService {
     public PortafolioDTO insertar(PortafolioDTO dto) {
         Usuarios usuario = usuariosRepositorio.findById(dto.getUsuarioId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        Portafolios entidad = modelMapper.map(dto, Portafolios.class);
+        Portafolio entidad = modelMapper.map(dto, Portafolio.class);
         entidad.setUsuario(usuario);
         return modelMapper.map(portafoliosRepositorio.save(entidad), PortafolioDTO.class);
     }
