@@ -1,8 +1,12 @@
 package com.upc.finexia.controllers;
 
 import com.upc.finexia.dtos.InversionDTO;
+import com.upc.finexia.dtos.ReportePortafolioDTO;
+import com.upc.finexia.dtos.ReporteTopPosicionesPortafolioDTO;
 import com.upc.finexia.services.InversionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,4 +37,28 @@ public class InversionController {
     public void eliminar(@PathVariable Long id) {
         inversionService.eliminar(id);
     }
+
+    // REPORTE
+
+    //US27: Reporte de portafolio — distribución por tipo de activo
+    @GetMapping("/reporte/portafolio/{usuarioId}")
+    public ResponseEntity<List<ReportePortafolioDTO>> reportePortafolio(
+            @PathVariable Long usuarioId) {
+        return new ResponseEntity<>(
+                inversionService.reportePortafolio(usuarioId),
+                HttpStatus.OK);
+    }
+
+    //US27: Top posiciones del portafolio
+
+    @GetMapping("/reporte/top/{usuarioId}")
+    public ResponseEntity<List<ReporteTopPosicionesPortafolioDTO>> topPosicionesPortafolio(
+            @PathVariable Long usuarioId,
+            @RequestParam(defaultValue = "10") int top) {
+        return new ResponseEntity<>(
+                inversionService.topPosicionesPortafolio(usuarioId, top),
+                HttpStatus.OK);
+    }
+
+
 }
