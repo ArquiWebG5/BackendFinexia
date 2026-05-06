@@ -38,7 +38,7 @@ public class CuentaController {
         cuentaService.eliminar(id);
     }
 
-    // REPORTES
+    // REPORTE
     //US32: Resumen financiero del usuario
 
     @GetMapping("/reporte/resumen/{usuarioId}")

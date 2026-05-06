@@ -52,7 +52,7 @@ public class IngresoController {
         ingresoService.eliminar(id);
     }
 
-    // REPORTES
+    // REPORTE
     //US34: Ingresos recurrentes
 
     @GetMapping("/reporte/recurrentes/{cuentaId}")

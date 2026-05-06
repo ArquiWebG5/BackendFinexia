@@ -50,7 +50,7 @@ public class EgresoController {
         egresoService.eliminar(id);
     }
 
-    // REPORTES
+    // REPORTE
     //US28 & US37: Gastos por categoría
 
     @GetMapping("/reporte/por-categoria/{cuentaId}")
@@ -63,10 +63,8 @@ public class EgresoController {
                 HttpStatus.OK);
     }
 
-    /**
-     * US29: Comparar gastos mensuales
-     * GET /api/egresos/reporte/mensuales/1
-     */
+    //US29: Comparar gastos mensuales
+
     @GetMapping("/reporte/mensuales/{cuentaId}")
     public ResponseEntity<List<ReporteGastosMensualesDTO>> gastosMensuales(
             @PathVariable Long cuentaId) {

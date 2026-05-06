@@ -38,7 +38,7 @@ public class InversionController {
         inversionService.eliminar(id);
     }
 
-    // REPORTES
+    // REPORTE
 
     //US27: Reporte de portafolio — distribución por tipo de activo
     @GetMapping("/reporte/portafolio/{usuarioId}")
