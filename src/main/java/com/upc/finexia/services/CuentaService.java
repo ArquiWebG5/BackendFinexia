@@ -3,7 +3,7 @@ package com.upc.finexia.services;
 import com.upc.finexia.dtos.CuentaDTO;
 import com.upc.finexia.dtos.ReporteResumenFinancieroDTO;
 import com.upc.finexia.entities.Cuenta;
-import com.upc.finexia.entities.Usuarios;
+import com.upc.finexia.entities.Usuario;
 import com.upc.finexia.repositories.CuentaRepositorio;
 import com.upc.finexia.repositories.UsuarioRepositorio;
 import org.modelmapper.ModelMapper;
@@ -27,7 +27,7 @@ public class CuentaService {
     private ModelMapper modelMapper;
 
     public CuentaDTO insertar(CuentaDTO cuentaDTO) {
-        Usuarios usuario = usuariosRepositorio.findById(cuentaDTO.getUsuarioId())
+        Usuario usuario = usuariosRepositorio.findById(cuentaDTO.getUsuarioId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         Cuenta cuenta = modelMapper.map(cuentaDTO, Cuenta.class);
         cuenta.setUsuario(usuario);

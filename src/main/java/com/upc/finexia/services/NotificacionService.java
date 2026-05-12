@@ -2,7 +2,7 @@ package com.upc.finexia.services;
 
 import com.upc.finexia.dtos.NotificacionDTO;
 import com.upc.finexia.entities.Notificacion;
-import com.upc.finexia.entities.Usuarios;
+import com.upc.finexia.entities.Usuario;
 import com.upc.finexia.repositories.NotificacionRepositorio;
 import com.upc.finexia.repositories.UsuarioRepositorio;
 import org.modelmapper.ModelMapper;
@@ -25,7 +25,7 @@ public class NotificacionService {
     private ModelMapper modelMapper;
 
     public NotificacionDTO insertar(NotificacionDTO dto) {
-        Usuarios usuario = usuariosRepositorio.findById(dto.getUsuarioId())
+        Usuario usuario = usuariosRepositorio.findById(dto.getUsuarioId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         Notificacion entidad = modelMapper.map(dto, Notificacion.class);
         entidad.setUsuario(usuario);
