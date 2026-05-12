@@ -23,16 +23,16 @@ public interface CuentaRepositorio extends JpaRepository<Cuenta, Long> {
             "c.banco_nombre, " +
             "c.moneda, " +
             "COALESCE((SELECT SUM(i.monto) " +
-            "          FROM ingresos i " +
+            "          FROM ingreso i " +
             "          WHERE i.cuenta_id = c.id_cuenta), 0) AS total_ingresos, " +
             "COALESCE((SELECT SUM(e.monto) " +
-            "          FROM egresos e " +
+            "          FROM egreso e " +
             "          WHERE e.cuenta_id = c.id_cuenta), 0) AS total_egresos, " +
             "COALESCE((SELECT SUM(i.monto) " +
-            "          FROM ingresos i " +
+            "          FROM ingreso i " +
             "          WHERE i.cuenta_id = c.id_cuenta), 0) - " +
             "COALESCE((SELECT SUM(e.monto) " +
-            "          FROM egresos e " +
+            "          FROM egreso e " +
             "          WHERE e.cuenta_id = c.id_cuenta), 0) AS balance_neto, " +
             "c.saldo_actual " +
             "FROM cuenta c " +

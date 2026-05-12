@@ -16,10 +16,10 @@ public class Cuenta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_cuenta")
-    private Long idCuenta;  // ✅ coincide con BD
+    private Long idCuenta;
 
     @ManyToOne
-    @JoinColumn(name = "id_usuario", nullable = false)  // ✅ coincide con BD
+    @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
     @Column(name = "nombre_cuenta", nullable = false, length = 100)

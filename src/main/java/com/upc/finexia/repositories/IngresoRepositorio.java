@@ -27,7 +27,7 @@ public interface IngresoRepositorio extends JpaRepository<Ingreso, Long> {
     AVG(i.monto) AS promedio,
     MIN(i.monto) AS minimo,
     MAX(i.monto) AS maximo
-    FROM ingresos i
+    FROM ingreso i
     WHERE i.cuenta_id = :cuentaId
     GROUP BY i.categoria
     HAVING COUNT(DISTINCT to_char(i.fecha, 'YYYY-MM')) >= :minMeses
@@ -43,7 +43,7 @@ public interface IngresoRepositorio extends JpaRepository<Ingreso, Long> {
     SELECT
         date_trunc('month', i.fecha) AS mes,
         SUM(i.monto) AS total_ingresos
-    FROM ingresos i
+    FROM ingreso i
     WHERE i.cuenta_id = :cuentaId
     GROUP BY date_trunc('month', i.fecha)
     ),
@@ -51,7 +51,7 @@ public interface IngresoRepositorio extends JpaRepository<Ingreso, Long> {
     SELECT
         date_trunc('month', e.fecha) AS mes,
         SUM(e.monto) AS total_egresos
-    FROM egresos e
+    FROM egreso e
     WHERE e.cuenta_id = :cuentaId
     GROUP BY date_trunc('month', e.fecha))
     SELECT
