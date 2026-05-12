@@ -27,8 +27,9 @@ public class UsuarioService {
     public UsuarioDTO actualizar(Long id, UsuarioDTO usuarioDTO) { // US04
         Usuario usuario = usuariosRepositorio.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        usuario.setNombreCompleto(usuarioDTO.getNombreCompleto());
-        usuario.setEmail(usuarioDTO.getEmail());
+        usuario.setNombre(usuarioDTO.getNombre());
+        usuario.setApellido(usuarioDTO.getApellido());
+        usuario.setCorreo(usuarioDTO.getCorreo());
         return modelMapper.map(usuariosRepositorio.save(usuario), UsuarioDTO.class);
     }
 

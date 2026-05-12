@@ -1,5 +1,6 @@
 package com.upc.finexia.dtos;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,10 +15,13 @@ import java.time.LocalDate;
 public class UsuarioDTO {
 
     private Long idUsuario;
-    private String nombreCompleto;
-    private String email;
+    private String nombre;
+    private String apellido;
+    private String correo;
+    private String contraseña;
     private String plan;
     private String idioma;
     private String monedaPreferida;
     private String temaUi;
+    private LocalDate fechaRegistro;
 }
