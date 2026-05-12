@@ -1,7 +1,7 @@
 package com.upc.finexia.services;
 
 import com.upc.finexia.dtos.UsuarioDTO;
-import com.upc.finexia.entities.Usuarios;
+import com.upc.finexia.entities.Usuario;
 import com.upc.finexia.repositories.UsuarioRepositorio;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +20,12 @@ public class UsuarioService {
     private ModelMapper modelMapper;
 
     public UsuarioDTO registrar(UsuarioDTO usuarioDTO) { // US01
-        Usuarios usuario = modelMapper.map(usuarioDTO, Usuarios.class);
+        Usuario usuario = modelMapper.map(usuarioDTO, Usuario.class);
         return modelMapper.map(usuariosRepositorio.save(usuario), UsuarioDTO.class);
     }
 
     public UsuarioDTO actualizar(Long id, UsuarioDTO usuarioDTO) { // US04
-        Usuarios usuario = usuariosRepositorio.findById(id)
+        Usuario usuario = usuariosRepositorio.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         usuario.setNombreCompleto(usuarioDTO.getNombreCompleto());
         usuario.setEmail(usuarioDTO.getEmail());

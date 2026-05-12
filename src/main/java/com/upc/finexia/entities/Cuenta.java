@@ -20,7 +20,7 @@ public class Cuenta {
 
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)  // ✅ coincide con BD
-    private Usuarios usuario;
+    private Usuario usuario;
 
     @Column(name = "nombre_cuenta", nullable = false, length = 100)
     private String nombreCuenta;
@@ -31,7 +31,7 @@ public class Cuenta {
     @Column(name = "tipo_cuenta", nullable = false, length = 20)
     private String tipoCuenta;
 
-    @Column(length = 3)
+    @Column(length = 10)
     private String moneda;
 
     @Column(name = "saldo_inicial")

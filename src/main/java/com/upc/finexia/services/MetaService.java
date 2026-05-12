@@ -2,7 +2,7 @@ package com.upc.finexia.services;
 
 import com.upc.finexia.dtos.MetaDTO;
 import com.upc.finexia.entities.Meta;
-import com.upc.finexia.entities.Usuarios;
+import com.upc.finexia.entities.Usuario;
 import com.upc.finexia.repositories.MetaRepositorio;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class MetaService {
     private ModelMapper modelMapper;
 
     public MetaDTO insertar(MetaDTO dto) {
-        Usuarios usuario = usuariosRepositorio.findById(dto.getUsuarioId())
+        Usuario usuario = usuariosRepositorio.findById(dto.getUsuarioId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         Meta entidad = modelMapper.map(dto, Meta.class);
         entidad.setUsuario(usuario);

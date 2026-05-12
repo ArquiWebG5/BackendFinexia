@@ -2,7 +2,7 @@ package com.upc.finexia.services;
 
 import com.upc.finexia.dtos.PortafolioDTO;
 import com.upc.finexia.entities.Portafolio;
-import com.upc.finexia.entities.Usuarios;
+import com.upc.finexia.entities.Usuario;
 import com.upc.finexia.repositories.PortafolioRepositorio;
 import com.upc.finexia.repositories.UsuarioRepositorio;
 import org.modelmapper.ModelMapper;
@@ -25,7 +25,7 @@ public class PortafolioService {
     private ModelMapper modelMapper;
 
     public PortafolioDTO insertar(PortafolioDTO dto) {
-        Usuarios usuario = usuariosRepositorio.findById(dto.getUsuarioId())
+        Usuario usuario = usuariosRepositorio.findById(dto.getUsuarioId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         Portafolio entidad = modelMapper.map(dto, Portafolio.class);
         entidad.setUsuario(usuario);

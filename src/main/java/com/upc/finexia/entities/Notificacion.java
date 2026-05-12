@@ -21,12 +21,12 @@ public class Notificacion {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuarios usuario;
+    private Usuario usuario;
 
     @Column(nullable = false, length = 150)
     private String titulo;
 
-    @Column(nullable = false, length = 500)
+    @Column(nullable = false, length = 200)
     private String mensaje;
 
     @Column(length = 30)

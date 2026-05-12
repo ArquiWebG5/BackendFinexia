@@ -21,7 +21,7 @@ public class Meta {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuarios usuario;
+    private Usuario usuario;
 
     @Column(nullable = false, length = 150)
     private String nombre; // <-- ESTE NOMBRE GENERA EL MÉTODO setNombre()
@@ -44,7 +44,7 @@ public class Meta {
     @Column(length = 50)
     private String categoria;
 
-    @Column(length = 15)
+    @Column(length = 20)
     private String estado;
 
     @Column(name = "creado_en", nullable = false)

@@ -19,7 +19,7 @@ public class Portafolio {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuarios usuario;
+    private Usuario usuario;
 
     @Column(name = "valor_total")
     private double valorTotal;
@@ -30,9 +30,7 @@ public class Portafolio {
     @Column(name = "distribucion_activos", length = 250)
     private String distribucionActivos;   // JSON string con % por tipo
 
-    @Column(name = "nivel_diversificacion", length = 10)
+    @Column(name = "nivel_diversificacion", length = 50)
     private String nivelDiversificacion;  // "BAJO", "MEDIO", "ALTO"
 
-    @Column(name = "actualizado_en")
-    private LocalDate actualizadoEn;
 }
