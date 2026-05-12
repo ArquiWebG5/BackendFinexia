@@ -20,49 +20,54 @@ public interface IngresoRepositorio extends JpaRepository<Ingreso, Long> {
 
     // US34: Detectar ingresos recurrentes
 
-    @Query("SELECT new com.upc.finexia.dtos.ReporteIngresosRecurrentesDTO(" +
-            "i.categoria, " +
-            "COUNT(DISTINCT FUNCTION('CONCAT', FUNCTION('YEAR', i.fecha), " +
-            "                        FUNCTION('MONTH', i.fecha))), " +
-            "AVG(i.monto), " +
-            "MIN(i.monto), " +
-            "MAX(i.monto)) " +
-            "FROM Ingreso i " +
-            "WHERE i.cuenta.idCuenta = :cuentaId " +
-            "GROUP BY i.categoria " +
-            "HAVING COUNT(DISTINCT FUNCTION('CONCAT', FUNCTION('YEAR', i.fecha), " +
-            "                               FUNCTION('MONTH', i.fecha))) >= :minMeses " +
-            "ORDER BY COUNT(DISTINCT FUNCTION('CONCAT', FUNCTION('YEAR', i.fecha), " +
-            "                                 FUNCTION('MONTH', i.fecha))) DESC")
+    @Query(value = """
+    SELECT
+    i.categoria,
+    COUNT(DISTINCT to_char(i.fecha, 'YYYY-MM')) AS frecuencia,
+    AVG(i.monto) AS promedio,
+    MIN(i.monto) AS minimo,
+    MAX(i.monto) AS maximo
+    FROM ingresos i
+    WHERE i.cuenta_id = :cuentaId
+    GROUP BY i.categoria
+    HAVING COUNT(DISTINCT to_char(i.fecha, 'YYYY-MM')) >= :minMeses
+     ORDER BY frecuencia DESC
+    """, nativeQuery = true)
     List<ReporteIngresosRecurrentesDTO> ingresosRecurrentes(
             @Param("cuentaId") Long cuentaId,
             @Param("minMeses") int minMeses);
 
-
     // US30: Análisis de ahorro potencial
-
-    @Query("SELECT new com.upc.finexia.dtos.ReporteAnalisisAhorroDTO(" +
-            "CONCAT(FUNCTION('YEAR', i.fecha), '-', " +
-            "       FUNCTION('LPAD', FUNCTION('MONTH', i.fecha), 2, '0')), " +
-            "SUM(i.monto), " +
-            "COALESCE((SELECT SUM(e.monto) FROM Egreso e " +
-            "          WHERE e.cuenta.idCuenta = :cuentaId " +
-            "          AND FUNCTION('YEAR', e.fecha) = FUNCTION('YEAR', i.fecha) " +
-            "          AND FUNCTION('MONTH', e.fecha) = FUNCTION('MONTH', i.fecha)), 0), " +
-            "SUM(i.monto) - COALESCE((SELECT SUM(e.monto) FROM Egreso e " +
-            "                         WHERE e.cuenta.idCuenta = :cuentaId " +
-            "                         AND FUNCTION('YEAR', e.fecha) = FUNCTION('YEAR', i.fecha) " +
-            "                         AND FUNCTION('MONTH', e.fecha) = FUNCTION('MONTH', i.fecha)), 0), " +
-            "CASE WHEN SUM(i.monto) > 0 " +
-            "     THEN (SUM(i.monto) - COALESCE((SELECT SUM(e.monto) FROM Egreso e " +
-            "                                     WHERE e.cuenta.idCuenta = :cuentaId " +
-            "                                     AND FUNCTION('YEAR', e.fecha) = FUNCTION('YEAR', i.fecha) " +
-            "                                     AND FUNCTION('MONTH', e.fecha) = FUNCTION('MONTH', i.fecha)), 0)) / SUM(i.monto) * 100 " +
-            "     ELSE 0 END) " +
-            "FROM Ingreso i " +
-            "WHERE i.cuenta.idCuenta = :cuentaId " +
-            "GROUP BY FUNCTION('YEAR', i.fecha), FUNCTION('MONTH', i.fecha) " +
-            "ORDER BY FUNCTION('YEAR', i.fecha) DESC, FUNCTION('MONTH', i.fecha) DESC")
+    @Query(value = """
+    WITH ingresos_mensuales AS (
+    SELECT
+        date_trunc('month', i.fecha) AS mes,
+        SUM(i.monto) AS total_ingresos
+    FROM ingresos i
+    WHERE i.cuenta_id = :cuentaId
+    GROUP BY date_trunc('month', i.fecha)
+    ),
+    egresos_mensuales AS (
+    SELECT
+        date_trunc('month', e.fecha) AS mes,
+        SUM(e.monto) AS total_egresos
+    FROM egresos e
+    WHERE e.cuenta_id = :cuentaId
+    GROUP BY date_trunc('month', e.fecha))
+    SELECT
+    to_char(i.mes, 'YYYY-MM') AS periodo,
+    i.total_ingresos,
+    COALESCE(e.total_egresos, 0) AS total_egresos,
+    (i.total_ingresos - COALESCE(e.total_egresos, 0)) AS ahorro,
+    CASE
+        WHEN i.total_ingresos > 0 THEN
+            ((i.total_ingresos - COALESCE(e.total_egresos, 0)) / i.total_ingresos) * 100
+        ELSE 0
+    END AS porcentaje_ahorro
+    FROM ingresos_mensuales i
+    LEFT JOIN egresos_mensuales e ON i.mes = e.mes
+    ORDER BY i.mes DESC
+    """, nativeQuery = true)
     List<ReporteAnalisisAhorroDTO> analisisAhorroPotencial(
             @Param("cuentaId") Long cuentaId);
 }

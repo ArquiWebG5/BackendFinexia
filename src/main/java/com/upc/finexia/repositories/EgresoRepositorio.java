@@ -31,27 +31,31 @@ public interface EgresoRepositorio extends JpaRepository<Egreso, Long> {
             "MIN(e.monto)) " +
             "FROM Egreso e " +
             "WHERE e.cuenta.idCuenta = :cuentaId " +
-            "AND (:desde IS NULL OR e.fecha >= :desde) " +
-            "AND (:hasta IS NULL OR e.fecha <= :hasta) " +
+            "AND e.fecha BETWEEN :desde AND :hasta " +
             "GROUP BY e.categoria " +
             "ORDER BY SUM(e.monto) DESC")
-    List<ReporteGastosPorCategoriaDTO> gastosPorCategoria(
+    List<ReporteGastosPorCategoriaDTO> gastosPorCategoriaConFechas(
             @Param("cuentaId") Long cuentaId,
             @Param("desde") LocalDate desde,
             @Param("hasta") LocalDate hasta);
 
-
     // US29: Comparar gastos mensuales
 
     @Query("SELECT new com.upc.finexia.dtos.ReporteGastosMensualesDTO(" +
-            "CONCAT(FUNCTION('YEAR', e.fecha), '-', " +
-            "       FUNCTION('LPAD', FUNCTION('MONTH', e.fecha), 2, '0')), " +
+            "CONCAT(" +
+            "CAST(EXTRACT(YEAR FROM e.fecha) AS string), '-', " +
+            "CASE " +
+            "WHEN EXTRACT(MONTH FROM e.fecha) < 10 " +
+            "THEN CONCAT('0', CAST(EXTRACT(MONTH FROM e.fecha) AS string)) " +
+            "ELSE CAST(EXTRACT(MONTH FROM e.fecha) AS string) " +
+            "END), " +
             "SUM(e.monto), " +
             "COUNT(e.id)) " +
             "FROM Egreso e " +
             "WHERE e.cuenta.idCuenta = :cuentaId " +
-            "GROUP BY FUNCTION('YEAR', e.fecha), FUNCTION('MONTH', e.fecha) " +
-            "ORDER BY FUNCTION('YEAR', e.fecha) DESC, FUNCTION('MONTH', e.fecha) DESC")
+            "GROUP BY EXTRACT(YEAR FROM e.fecha), EXTRACT(MONTH FROM e.fecha) " +
+            "ORDER BY EXTRACT(YEAR FROM e.fecha) DESC, " +
+            "EXTRACT(MONTH FROM e.fecha) DESC")
     List<ReporteGastosMensualesDTO> gastosMensuales(
             @Param("cuentaId") Long cuentaId);
 
@@ -59,52 +63,57 @@ public interface EgresoRepositorio extends JpaRepository<Egreso, Long> {
 
     @Query("SELECT new com.upc.finexia.dtos.ReporteRiesgosGastoDTO(" +
             "e.categoria, " +
-            "SUM(CASE WHEN FUNCTION('YEAR', e.fecha) = FUNCTION('YEAR', CURRENT_DATE) " +
-            "          AND FUNCTION('MONTH', e.fecha) = FUNCTION('MONTH', CURRENT_DATE) " +
-            "          THEN e.monto ELSE 0 END), " +
-            "AVG(CASE WHEN FUNCTION('YEAR', e.fecha) < FUNCTION('YEAR', CURRENT_DATE) " +
-            "          OR (FUNCTION('YEAR', e.fecha) = FUNCTION('YEAR', CURRENT_DATE) " +
-            "              AND FUNCTION('MONTH', e.fecha) < FUNCTION('MONTH', CURRENT_DATE)) " +
-            "          THEN e.monto END), " +
-            "CASE WHEN AVG(CASE WHEN FUNCTION('YEAR', e.fecha) < FUNCTION('YEAR', CURRENT_DATE) " +
-            "                    OR (FUNCTION('YEAR', e.fecha) = FUNCTION('YEAR', CURRENT_DATE) " +
-            "                        AND FUNCTION('MONTH', e.fecha) < FUNCTION('MONTH', CURRENT_DATE)) " +
-            "                    THEN e.monto END) IS NULL THEN NULL " +
-            "     ELSE CAST((SUM(CASE WHEN FUNCTION('YEAR', e.fecha) = FUNCTION('YEAR', CURRENT_DATE) " +
-            "                         AND FUNCTION('MONTH', e.fecha) = FUNCTION('MONTH', CURRENT_DATE) " +
-            "                         THEN e.monto ELSE 0 END) - " +
-            "              AVG(CASE WHEN FUNCTION('YEAR', e.fecha) < FUNCTION('YEAR', CURRENT_DATE) " +
-            "                       OR (FUNCTION('YEAR', e.fecha) = FUNCTION('YEAR', CURRENT_DATE) " +
-            "                           AND FUNCTION('MONTH', e.fecha) < FUNCTION('MONTH', CURRENT_DATE)) " +
-            "                       THEN e.monto END)) / " +
-            "             AVG(CASE WHEN FUNCTION('YEAR', e.fecha) < FUNCTION('YEAR', CURRENT_DATE) " +
-            "                      OR (FUNCTION('YEAR', e.fecha) = FUNCTION('YEAR', CURRENT_DATE) " +
-            "                          AND FUNCTION('MONTH', e.fecha) < FUNCTION('MONTH', CURRENT_DATE)) " +
-            "                      THEN e.monto END) * 100 AS Double) END, " +
-            "CASE WHEN AVG(CASE WHEN FUNCTION('YEAR', e.fecha) < FUNCTION('YEAR', CURRENT_DATE) " +
-            "                    OR (FUNCTION('YEAR', e.fecha) = FUNCTION('YEAR', CURRENT_DATE) " +
-            "                        AND FUNCTION('MONTH', e.fecha) < FUNCTION('MONTH', CURRENT_DATE)) " +
-            "                    THEN e.monto END) IS NULL THEN 'SIN_HISTORIAL' " +
-            "     WHEN SUM(CASE WHEN FUNCTION('YEAR', e.fecha) = FUNCTION('YEAR', CURRENT_DATE) " +
-            "                   AND FUNCTION('MONTH', e.fecha) = FUNCTION('MONTH', CURRENT_DATE) " +
-            "                   THEN e.monto ELSE 0 END) > " +
-            "          AVG(CASE WHEN FUNCTION('YEAR', e.fecha) < FUNCTION('YEAR', CURRENT_DATE) " +
-            "                   OR (FUNCTION('YEAR', e.fecha) = FUNCTION('YEAR', CURRENT_DATE) " +
-            "                       AND FUNCTION('MONTH', e.fecha) < FUNCTION('MONTH', CURRENT_DATE)) " +
-            "                   THEN e.monto END) * 1.3 THEN 'RIESGO_ALTO' " +
-            "     WHEN SUM(CASE WHEN FUNCTION('YEAR', e.fecha) = FUNCTION('YEAR', CURRENT_DATE) " +
-            "                   AND FUNCTION('MONTH', e.fecha) = FUNCTION('MONTH', CURRENT_DATE) " +
-            "                   THEN e.monto ELSE 0 END) > " +
-            "          AVG(CASE WHEN FUNCTION('YEAR', e.fecha) < FUNCTION('YEAR', CURRENT_DATE) " +
-            "                   OR (FUNCTION('YEAR', e.fecha) = FUNCTION('YEAR', CURRENT_DATE) " +
-            "                       AND FUNCTION('MONTH', e.fecha) < FUNCTION('MONTH', CURRENT_DATE)) " +
-            "                   THEN e.monto END) * 1.1 THEN 'RIESGO_MEDIO' " +
-            "     ELSE 'NORMAL' END) " +
+
+            // gasto actual
+            "SUM(CASE " +
+            "WHEN FUNCTION('DATE_PART', 'YEAR', e.fecha) = FUNCTION('DATE_PART', 'YEAR', CURRENT_DATE) " +
+            "AND FUNCTION('DATE_PART', 'MONTH', e.fecha) = FUNCTION('DATE_PART', 'MONTH', CURRENT_DATE) " +
+            "THEN e.monto ELSE 0 END), " +
+
+            // promedio histórico
+            "AVG(CASE " +
+            "WHEN e.fecha < CURRENT_DATE " +
+            "THEN e.monto END), " +
+
+            // variación porcentual
+            "CASE " +
+            "WHEN AVG(CASE WHEN e.fecha < CURRENT_DATE THEN e.monto END) IS NULL " +
+            "THEN 0.0 " +
+            "ELSE ( " +
+            "(SUM(CASE " +
+            "WHEN FUNCTION('DATE_PART', 'YEAR', e.fecha) = FUNCTION('DATE_PART', 'YEAR', CURRENT_DATE) " +
+            "AND FUNCTION('DATE_PART', 'MONTH', e.fecha) = FUNCTION('DATE_PART', 'MONTH', CURRENT_DATE) " +
+            "THEN e.monto ELSE 0 END) " +
+            "- AVG(CASE WHEN e.fecha < CURRENT_DATE THEN e.monto END)) " +
+            "/ AVG(CASE WHEN e.fecha < CURRENT_DATE THEN e.monto END) * 100 " +
+            ") END, " +
+
+            // nivel riesgo
+            "CASE " +
+            "WHEN AVG(CASE WHEN e.fecha < CURRENT_DATE THEN e.monto END) IS NULL " +
+            "THEN 'SIN_HISTORIAL' " +
+
+            "WHEN SUM(CASE " +
+            "WHEN FUNCTION('DATE_PART', 'YEAR', e.fecha) = FUNCTION('DATE_PART', 'YEAR', CURRENT_DATE) " +
+            "AND FUNCTION('DATE_PART', 'MONTH', e.fecha) = FUNCTION('DATE_PART', 'MONTH', CURRENT_DATE) " +
+            "THEN e.monto ELSE 0 END) " +
+            "> AVG(CASE WHEN e.fecha < CURRENT_DATE THEN e.monto END) * 1.3 " +
+            "THEN 'RIESGO_ALTO' " +
+
+            "WHEN SUM(CASE " +
+            "WHEN FUNCTION('DATE_PART', 'YEAR', e.fecha) = FUNCTION('DATE_PART', 'YEAR', CURRENT_DATE) " +
+            "AND FUNCTION('DATE_PART', 'MONTH', e.fecha) = FUNCTION('DATE_PART', 'MONTH', CURRENT_DATE) " +
+            "THEN e.monto ELSE 0 END) " +
+            "> AVG(CASE WHEN e.fecha < CURRENT_DATE THEN e.monto END) * 1.1 " +
+            "THEN 'RIESGO_MEDIO' " +
+
+            "ELSE 'NORMAL' END) " +
+
             "FROM Egreso e " +
             "WHERE e.cuenta.idCuenta = :cuentaId " +
             "GROUP BY e.categoria")
-    List<ReporteRiesgosGastoDTO> detectarRiesgosGasto(@Param("cuentaId") Long cuentaId);
-
+    List<ReporteRiesgosGastoDTO> detectarRiesgosGasto(
+            @Param("cuentaId") Long cuentaId);
 
     // US31: Top gastos del mes actual
 
@@ -117,8 +126,8 @@ public interface EgresoRepositorio extends JpaRepository<Egreso, Long> {
             "e.comprobante) " +
             "FROM Egreso e " +
             "WHERE e.cuenta.idCuenta = :cuentaId " +
-            "AND FUNCTION('YEAR', e.fecha) = FUNCTION('YEAR', CURRENT_DATE) " +
-            "AND FUNCTION('MONTH', e.fecha) = FUNCTION('MONTH', CURRENT_DATE) " +
+            "AND FUNCTION('DATE_PART', 'YEAR', e.fecha) = FUNCTION('DATE_PART', 'YEAR', CURRENT_DATE) " +
+            "AND FUNCTION('DATE_PART', 'MONTH', e.fecha) = FUNCTION('DATE_PART', 'MONTH', CURRENT_DATE) " +
             "ORDER BY e.monto DESC")
     List<ReporteTopGastosMesDTO> topGastosMesActual(
             @Param("cuentaId") Long cuentaId);
