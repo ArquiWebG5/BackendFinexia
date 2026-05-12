@@ -63,7 +63,7 @@ public class EgresoController {
                 HttpStatus.OK);
     }
 
-    //US29: Comparar gastos mensuales
+    //US29: Comparar gastos mensuales  FALTA CORREGIR
 
     @GetMapping("/reporte/mensuales/{cuentaId}")
     public ResponseEntity<List<ReporteGastosMensualesDTO>> gastosMensuales(
@@ -73,7 +73,7 @@ public class EgresoController {
                 HttpStatus.OK);
     }
 
-    //US33: Detectar riesgos de gasto
+    //US33: Detectar riesgos de gasto FALTA CORREGIR
 
     @GetMapping("/reporte/riesgos/{cuentaId}")
     public ResponseEntity<List<ReporteRiesgosGastoDTO>> detectarRiesgosGasto(

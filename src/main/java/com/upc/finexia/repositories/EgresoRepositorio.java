@@ -31,11 +31,10 @@ public interface EgresoRepositorio extends JpaRepository<Egreso, Long> {
             "MIN(e.monto)) " +
             "FROM Egreso e " +
             "WHERE e.cuenta.idCuenta = :cuentaId " +
-            "AND (:desde IS NULL OR e.fecha >= :desde) " +
-            "AND (:hasta IS NULL OR e.fecha <= :hasta) " +
+            "AND e.fecha BETWEEN :desde AND :hasta " +
             "GROUP BY e.categoria " +
             "ORDER BY SUM(e.monto) DESC")
-    List<ReporteGastosPorCategoriaDTO> gastosPorCategoria(
+    List<ReporteGastosPorCategoriaDTO> gastosPorCategoriaConFechas(
             @Param("cuentaId") Long cuentaId,
             @Param("desde") LocalDate desde,
             @Param("hasta") LocalDate hasta);
@@ -44,17 +43,22 @@ public interface EgresoRepositorio extends JpaRepository<Egreso, Long> {
     // US29: Comparar gastos mensuales
 
     @Query("SELECT new com.upc.finexia.dtos.ReporteGastosMensualesDTO(" +
-            "CONCAT(FUNCTION('YEAR', e.fecha), '-', " +
-            "       FUNCTION('LPAD', FUNCTION('MONTH', e.fecha), 2, '0')), " +
+            "CONCAT(" +
+            "CAST(EXTRACT(YEAR FROM e.fecha) AS string), '-', " +
+            "CASE " +
+            "WHEN EXTRACT(MONTH FROM e.fecha) < 10 " +
+            "THEN CONCAT('0', CAST(EXTRACT(MONTH FROM e.fecha) AS string)) " +
+            "ELSE CAST(EXTRACT(MONTH FROM e.fecha) AS string) " +
+            "END), " +
             "SUM(e.monto), " +
             "COUNT(e.id)) " +
             "FROM Egreso e " +
             "WHERE e.cuenta.idCuenta = :cuentaId " +
-            "GROUP BY FUNCTION('YEAR', e.fecha), FUNCTION('MONTH', e.fecha) " +
-            "ORDER BY FUNCTION('YEAR', e.fecha) DESC, FUNCTION('MONTH', e.fecha) DESC")
+            "GROUP BY EXTRACT(YEAR FROM e.fecha), EXTRACT(MONTH FROM e.fecha) " +
+            "ORDER BY EXTRACT(YEAR FROM e.fecha) DESC, " +
+            "EXTRACT(MONTH FROM e.fecha) DESC")
     List<ReporteGastosMensualesDTO> gastosMensuales(
             @Param("cuentaId") Long cuentaId);
-
     // US33: Detectar riesgos de gasto excesivo
 
     @Query("SELECT new com.upc.finexia.dtos.ReporteRiesgosGastoDTO(" +

@@ -71,7 +71,7 @@ public class EgresoService {
 
     public List<ReporteGastosPorCategoriaDTO> gastosPorCategoria(
             Long cuentaId, LocalDate desde, LocalDate hasta) {
-        return egresosRepositorio.gastosPorCategoria(cuentaId, desde, hasta);
+        return egresosRepositorio.gastosPorCategoriaConFechas(cuentaId, desde, hasta);
     }
 
     //US29: Comparar gastos mensuales
