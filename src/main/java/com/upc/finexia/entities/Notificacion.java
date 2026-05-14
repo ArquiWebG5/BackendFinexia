@@ -1,6 +1,5 @@
 package com.upc.finexia.entities;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+
+// Notificacion enviada al usuario. Soporta HU 29 - Recibir notificaciones financieras.
 @Entity
 @Table(name = "notificacion")
 @Getter
@@ -37,5 +38,4 @@ public class Notificacion {
 
     @Column(name = "creado_en", nullable = false)
     private LocalDate creadoEn;
-
 }

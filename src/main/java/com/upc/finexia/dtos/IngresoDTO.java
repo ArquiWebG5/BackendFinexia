@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
+// DTO de Ingreso (HU 07, HU 08, HU 10, HU 12).
 @Getter @Setter @AllArgsConstructor @NoArgsConstructor
 public class IngresoDTO {
     private Long id;

@@ -13,14 +13,17 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 
+// Repositorio de Egresos. Soporta HU 06, 09, 11, 13, 26, 27.
 @Repository
 public interface EgresoRepositorio extends JpaRepository<Egreso, Long> {
     List<Egreso> findByCuentaIdCuenta(Long idCuenta);
+
+    // HU 13 - Clasificar gastos por categoria.
     List<Egreso> findByCuentaIdCuentaAndCategoria(Long idCuenta, String categoria);
     List<Egreso> findByCuentaIdCuentaAndFechaBetween(Long idCuenta, LocalDate inicio, LocalDate fin);
 
 
-    // US28 & US37: Gastos por categoría
+    // HU 13 / HU 26 - Reporte de gastos agregados por categoria con rango de fechas.
 
     @Query("SELECT new com.upc.finexia.dtos.ReporteGastosPorCategoriaDTO(" +
             "e.categoria, " +
@@ -39,7 +42,7 @@ public interface EgresoRepositorio extends JpaRepository<Egreso, Long> {
             @Param("desde") LocalDate desde,
             @Param("hasta") LocalDate hasta);
 
-    // US29: Comparar gastos mensuales
+    // HU 27 - Comparar gastos mensuales.
 
     @Query("SELECT new com.upc.finexia.dtos.ReporteGastosMensualesDTO(" +
             "CONCAT(" +
@@ -59,7 +62,8 @@ public interface EgresoRepositorio extends JpaRepository<Egreso, Long> {
     List<ReporteGastosMensualesDTO> gastosMensuales(
             @Param("cuentaId") Long cuentaId);
 
-    // US33: Detectar riesgos de gasto excesivo
+    // Detecta riesgos de sobregasto comparando mes actual con promedio historico
+    // (apoyo a HU 26 - reporte de gastos / HU 30 - dashboard).
 
     @Query("SELECT new com.upc.finexia.dtos.ReporteRiesgosGastoDTO(" +
             "e.categoria, " +
@@ -115,7 +119,7 @@ public interface EgresoRepositorio extends JpaRepository<Egreso, Long> {
     List<ReporteRiesgosGastoDTO> detectarRiesgosGasto(
             @Param("cuentaId") Long cuentaId);
 
-    // US31: Top gastos del mes actual
+    // HU 26 - Top gastos del mes actual (reporte de gastos).
 
     @Query("SELECT new com.upc.finexia.dtos.ReporteTopGastosMesDTO(" +
             "e.id, " +

@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
+// Meta de ahorro del usuario. Soporta HU 14 - HU 18.
 @Entity
 @Table(name = "meta")
 @Getter
@@ -24,7 +25,7 @@ public class Meta {
     private Usuario usuario;
 
     @Column(nullable = false, length = 150)
-    private String nombre; // <-- ESTE NOMBRE GENERA EL MÉTODO setNombre()
+    private String nombre;
 
     @Column(name = "monto_objetivo", nullable = false)
     private double montoObjetivo;
@@ -38,6 +39,7 @@ public class Meta {
     @Column(name = "fecha_objetivo")
     private LocalDate fechaObjetivo;
 
+    // HU 17 - Visualizar progreso de meta.
     @Column(name = "progreso_actual")
     private double progresoActual;
 

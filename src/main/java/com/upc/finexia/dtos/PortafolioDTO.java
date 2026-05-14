@@ -5,8 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
-
+// DTO de snapshot de Portafolio (HU 25 - Visualizar portafolio).
 @Getter @Setter @AllArgsConstructor @NoArgsConstructor
 public class PortafolioDTO {
     private Long id;
@@ -15,5 +14,4 @@ public class PortafolioDTO {
     private double rendimientoHistorico;
     private String distribucionActivos;
     private String nivelDiversificacion;
-    private LocalDate actualizadoEn;
 }

@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 
+// Ingreso registrado contra una Cuenta. Soporta HU 07, HU 08, HU 10, HU 12.
 @Entity
 @Table(name = "ingreso")
 @Setter

@@ -6,7 +6,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+// Repositorio de Metas de ahorro (HU 14-18).
 @Repository
 public interface MetaRepositorio extends JpaRepository<Meta, Long> {
-    List<Meta> findByUsuarioIdUsuario(Long idUsuario); // ✅ ya estaba bien
+    // HU 18 - Listar metas de ahorro por usuario.
+    List<Meta> findByUsuarioIdUsuario(Long idUsuario);
 }

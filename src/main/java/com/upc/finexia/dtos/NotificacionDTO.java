@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
+// DTO de Notificacion (HU 29 - Recibir notificaciones financieras).
 @Getter @Setter @AllArgsConstructor @NoArgsConstructor
 public class NotificacionDTO {
     private Long id;

@@ -8,12 +8,12 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
+// Egreso/gasto registrado contra una Cuenta. Soporta HU 06, HU 09, HU 11, HU 13.
 @Entity
 @Table(name = "egreso")
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class Egreso {
 
     @Id
@@ -33,6 +33,7 @@ public class Egreso {
     @Column(length = 500)
     private String comprobante;
 
+    // HU 13 - Clasificar gastos por categoria.
     @Column(length = 20)
     private String categoria;
 

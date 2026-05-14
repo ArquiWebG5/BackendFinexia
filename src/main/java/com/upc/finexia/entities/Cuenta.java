@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
+// Cuenta bancaria asociada a un Usuario. Base para Egresos, Ingresos e Inversiones.
 @Entity
 @Table(name = "cuenta")
 @Getter @Setter @AllArgsConstructor @NoArgsConstructor
