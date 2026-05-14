@@ -10,13 +10,14 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+// Repositorio de Inversion. Soporta HU 21-25.
 @Repository
 public interface InversionRepositorio extends JpaRepository<Inversion, Long> {
+
+    // HU 24 - Listar inversiones por cuenta.
     List<Inversion> findByCuentaIdCuenta(Long idCuenta);
 
-
-    // US27: Reporte de portafolio — distribución por tipo de activo
-
+    // HU 25 - Visualizar portafolio: distribucion por tipo de activo.
     @Query("SELECT new com.upc.finexia.dtos.ReportePortafolioDTO(" +
             "inv.tipoActivo, " +
             "inv.categoria, " +
@@ -33,9 +34,7 @@ public interface InversionRepositorio extends JpaRepository<Inversion, Long> {
             "ORDER BY SUM(inv.valorTotal) DESC")
     List<ReportePortafolioDTO> reportePortafolio(@Param("usuarioId") Long usuarioId);
 
-
-    // US27: Detalle de posiciones del portafolio (top holdings)
-
+    // HU 25 - Visualizar portafolio: top posiciones (holdings) ordenadas por valor total.
     @Query("SELECT new com.upc.finexia.dtos.ReporteTopPosicionesPortafolioDTO(" +
             "inv.nombreActivo, " +
             "inv.ticker, " +
@@ -49,6 +48,5 @@ public interface InversionRepositorio extends JpaRepository<Inversion, Long> {
             "INNER JOIN inv.cuenta c " +
             "WHERE c.usuario.idUsuario = :usuarioId " +
             "ORDER BY inv.valorTotal DESC")
-    List<ReporteTopPosicionesPortafolioDTO> topPosicionesPortafolio(
-            @Param("usuarioId") Long usuarioId);
+    List<ReporteTopPosicionesPortafolioDTO> topPosicionesPortafolio(@Param("usuarioId") Long usuarioId);
 }

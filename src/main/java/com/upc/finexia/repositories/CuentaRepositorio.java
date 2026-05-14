@@ -10,11 +10,13 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 
+// Repositorio de Cuentas. Alimenta HU 30 (dashboard) con resumen financiero por cuenta.
 @Repository
 public interface CuentaRepositorio extends JpaRepository<Cuenta, Long> {
+    // Listado de cuentas por usuario (apoyo a HU 30 - dashboard).
     List<Cuenta> findByUsuarioIdUsuario(Long idUsuario);
 
-    // US32: Resumen financiero del usuario (SQL NATIVA)
+    // HU 30 - Consultar dashboard: resumen financiero por cuenta (totales y balance neto).
 
     @Query(value =
             "SELECT " +

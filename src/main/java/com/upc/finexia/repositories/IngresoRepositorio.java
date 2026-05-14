@@ -11,14 +11,16 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 
+// Repositorio de Ingresos. Soporta HU 07, 08, 10, 12.
 @Repository
 public interface IngresoRepositorio extends JpaRepository<Ingreso, Long> {
+    // HU 08 - Visualizar ingresos por cuenta.
     List<Ingreso> findByCuentaIdCuenta(Long idCuenta);
     List<Ingreso> findByCuentaIdCuentaAndCategoria(Long idCuenta, String categoria);
     List<Ingreso> findByCuentaIdCuentaAndFechaBetween(Long idCuenta, LocalDate inicio, LocalDate fin);
 
 
-    // US34: Detectar ingresos recurrentes
+    // Detecta ingresos recurrentes por categoria (apoyo a HU 30 - dashboard).
 
     @Query(value = """
     SELECT
@@ -37,7 +39,7 @@ public interface IngresoRepositorio extends JpaRepository<Ingreso, Long> {
             @Param("cuentaId") Long cuentaId,
             @Param("minMeses") int minMeses);
 
-    // US30: Análisis de ahorro potencial
+    // Analisis de ahorro mensual (apoyo a HU 30 - dashboard).
     @Query(value = """
     WITH ingresos_mensuales AS (
     SELECT

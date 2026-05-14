@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+// Snapshot agregado del portafolio del usuario. Soporta HU 25 - Visualizar portafolio.
 @Entity
 @Table(name = "portafolio")
 @Getter @Setter
@@ -28,9 +28,8 @@ public class Portafolio {
     private double rendimientoHistorico;
 
     @Column(name = "distribucion_activos", length = 250)
-    private String distribucionActivos;   // JSON string con % por tipo
+    private String distribucionActivos;   // JSON con % por tipo de activo
 
     @Column(name = "nivel_diversificacion", length = 50)
     private String nivelDiversificacion;  // "BAJO", "MEDIO", "ALTO"
-
 }

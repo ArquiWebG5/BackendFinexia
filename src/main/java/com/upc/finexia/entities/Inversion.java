@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
+// Inversion / activo financiero asociado a una Cuenta. Soporta HU 21 - HU 25.
 @Entity
 @Table(name = "inversion")
 @Getter
@@ -23,7 +24,6 @@ public class Inversion {
     @JoinColumn(name = "cuenta_id", nullable = false)
     private Cuenta cuenta;
 
-    // VERIFICA QUE ESTE NOMBRE ESTÉ BIEN ESCRITO:
     @Column(name = "nombre_activo", nullable = false, length = 200)
     private String nombreActivo;
 

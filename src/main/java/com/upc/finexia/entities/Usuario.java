@@ -1,8 +1,12 @@
 package com.upc.finexia.entities;
+
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
 
+// Perfil de negocio del usuario (datos personales/preferencias).
+// Las credenciales (username/password) viven en com.upc.finexia.security.entities.User.
+// Cubre HU 03 (visualizar perfil) y HU 04 (actualizar datos).
 @Entity
 @Table(name = "usuario")
 @Getter
@@ -22,11 +26,8 @@ public class Usuario {
     @Column(name = "apellido", nullable = false, length = 150)
     private String apellido;
 
-    @Column(name = "correo", nullable = false,unique = true, length = 100)
+    @Column(name = "correo", nullable = false, unique = true, length = 100)
     private String correo;
-
-    @Column(name = "contraseña", length = 50)
-    private String contraseña;
 
     @Column(name = "plan", length = 50)
     private String plan;
@@ -40,6 +41,6 @@ public class Usuario {
     @Column(name = "tema_ui", length = 50)
     private String temaUi;
 
-    @Column(name = "fecha_registro", length = 50)
+    @Column(name = "fecha_registro")
     private LocalDate fechaRegistro;
 }

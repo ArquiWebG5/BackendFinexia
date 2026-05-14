@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
+// DTO de Meta de ahorro (HU 14 a HU 18).
 @Getter
 @Setter
 @AllArgsConstructor
@@ -19,7 +20,7 @@ public class MetaDTO {
     private double balanceInicial;
     private double contribucionMensual;
     private LocalDate fechaObjetivo;
-    private double progresoActual;
+    private double progresoActual;   // HU 17 - progreso de la meta
     private String categoria;
     private String estado;
     private LocalDate creadoEn;

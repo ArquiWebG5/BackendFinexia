@@ -1,6 +1,5 @@
 package com.upc.finexia.dtos;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +7,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
+// DTO de perfil de Usuario (HU 03 - Visualizar perfil, HU 04 - Actualizar datos).
 @Getter
 @Setter
 @AllArgsConstructor
@@ -18,7 +18,6 @@ public class UsuarioDTO {
     private String nombre;
     private String apellido;
     private String correo;
-    private String contraseña;
     private String plan;
     private String idioma;
     private String monedaPreferida;

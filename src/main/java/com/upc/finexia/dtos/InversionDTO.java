@@ -7,6 +7,8 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
+// DTO de Inversion (HU 21 - registrar, HU 22 - editar, HU 24 - listar, HU 25 - portafolio).
+// Usa wrappers Double para tolerar valores nulos al mapear desde la entidad.
 @Getter
 @Setter
 @AllArgsConstructor
@@ -18,8 +20,8 @@ public class InversionDTO {
     private String ticker;
     private String tipoActivo;
     private String broker;
-    private double precioCompra;
-    private double cantidad;
+    private Double precioCompra;
+    private Double cantidad;
     private LocalDate fechaCompra;
     private double valorTotal;
     private String categoria;
