@@ -14,4 +14,6 @@ public interface NotificacionRepositorio extends JpaRepository<Notificacion, Lon
 
     // HU 29 - Bandeja de no leidas.
     List<Notificacion> findByUsuarioIdUsuarioAndLeido(Long idUsuario, boolean leido);
+
+    void deleteByUsuarioIdUsuario(Long idUsuario);
 }

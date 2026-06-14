@@ -9,6 +9,7 @@ import com.upc.finexia.services.EgresoService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,12 +29,15 @@ public class EgresoServiceImpl implements EgresoService {
 
     // HU 06 - Registrar gasto.
     @Override
+    @Transactional
     public EgresoDTO insertar(EgresoDTO egresoDTO) {
         Cuenta cuenta = cuentaRepositorio.findById(egresoDTO.getCuentaId())
                 .orElseThrow(() -> new RuntimeException("Cuenta no encontrada"));
         Egreso egreso = modelMapper.map(egresoDTO, Egreso.class);
         egreso.setCuenta(cuenta);
         egreso.setCreadoEn(LocalDate.now());
+        cuenta.setSaldoActual(cuenta.getSaldoActual() - egresoDTO.getMonto());
+        cuentaRepositorio.save(cuenta);
         return modelMapper.map(egresosRepositorio.save(egreso), EgresoDTO.class);
     }
 
@@ -61,27 +65,42 @@ public class EgresoServiceImpl implements EgresoService {
 
     // HU 09 - Editar gasto.
     @Override
+    @Transactional
     public EgresoDTO actualizar(Long id, EgresoDTO egresoDTO) {
         Egreso egreso = egresosRepositorio.findById(id)
                 .orElseThrow(() -> new RuntimeException("Egreso no encontrado"));
+        Cuenta cuenta = egreso.getCuenta();
+        double montoAnterior = egreso.getMonto();
         egreso.setMonto(egresoDTO.getMonto());
         egreso.setFecha(egresoDTO.getFecha());
         egreso.setCategoria(egresoDTO.getCategoria());
         egreso.setNota(egresoDTO.getNota());
         egreso.setComprobante(egresoDTO.getComprobante());
+        cuenta.setSaldoActual(cuenta.getSaldoActual() + montoAnterior - egresoDTO.getMonto());
+        cuentaRepositorio.save(cuenta);
         return modelMapper.map(egresosRepositorio.save(egreso), EgresoDTO.class);
     }
 
     // HU 11 - Eliminar gasto.
     @Override
+    @Transactional
     public void eliminar(Long id) {
-        egresosRepositorio.deleteById(id);
+        Egreso egreso = egresosRepositorio.findById(id)
+                .orElseThrow(() -> new RuntimeException("Egreso no encontrado"));
+        Cuenta cuenta = egreso.getCuenta();
+        cuenta.setSaldoActual(cuenta.getSaldoActual() + egreso.getMonto());
+        egresosRepositorio.delete(egreso);
+        cuentaRepositorio.save(cuenta);
     }
 
     // HU 13 / HU 26 - Reporte agregado por categoria.
     @Override
     public List<ReporteGastosPorCategoriaDTO> gastosPorCategoria(Long cuentaId, LocalDate desde, LocalDate hasta) {
-        return egresosRepositorio.gastosPorCategoriaConFechas(cuentaId, desde, hasta);
+        return egresosRepositorio.gastosPorCategoriaConFechas(
+                cuentaId,
+                desdeFiltro(desde),
+                hastaFiltro(hasta)
+        );
     }
 
     // HU 27 - Comparar gastos mensuales.
@@ -100,5 +119,13 @@ public class EgresoServiceImpl implements EgresoService {
     @Override
     public List<ReporteTopGastosMesDTO> topGastosMesActual(Long cuentaId) {
         return egresosRepositorio.topGastosMesActual(cuentaId);
+    }
+
+    private LocalDate desdeFiltro(LocalDate desde) {
+        return desde == null ? LocalDate.of(1, 1, 1) : desde;
+    }
+
+    private LocalDate hastaFiltro(LocalDate hasta) {
+        return hasta == null ? LocalDate.of(9999, 12, 31) : hasta;
     }
 }

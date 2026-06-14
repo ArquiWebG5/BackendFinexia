@@ -1,8 +1,8 @@
 package com.upc.finexia.repositories;
 
-import com.upc.finexia.dtos.ReporteAnalisisAhorroDTO;
-import com.upc.finexia.dtos.ReporteIngresosRecurrentesDTO;
 import com.upc.finexia.entities.Ingreso;
+import com.upc.finexia.repositories.projections.ReporteAnalisisAhorroProjection;
+import com.upc.finexia.repositories.projections.ReporteIngresosRecurrentesProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,24 +18,25 @@ public interface IngresoRepositorio extends JpaRepository<Ingreso, Long> {
     List<Ingreso> findByCuentaIdCuenta(Long idCuenta);
     List<Ingreso> findByCuentaIdCuentaAndCategoria(Long idCuenta, String categoria);
     List<Ingreso> findByCuentaIdCuentaAndFechaBetween(Long idCuenta, LocalDate inicio, LocalDate fin);
+    void deleteByCuentaIdCuenta(Long idCuenta);
 
 
     // Detecta ingresos recurrentes por categoria (apoyo a HU 30 - dashboard).
 
     @Query(value = """
     SELECT
-    i.categoria,
-    COUNT(DISTINCT to_char(i.fecha, 'YYYY-MM')) AS frecuencia,
-    AVG(i.monto) AS promedio,
-    MIN(i.monto) AS minimo,
-    MAX(i.monto) AS maximo
+    i.categoria AS "categoria",
+    COUNT(DISTINCT to_char(i.fecha, 'YYYY-MM')) AS "mesesPresentes",
+    AVG(i.monto) AS "montoPromedio",
+    MIN(i.monto) AS "montoMinimo",
+    MAX(i.monto) AS "montoMaximo"
     FROM ingreso i
     WHERE i.cuenta_id = :cuentaId
     GROUP BY i.categoria
     HAVING COUNT(DISTINCT to_char(i.fecha, 'YYYY-MM')) >= :minMeses
-     ORDER BY frecuencia DESC
+     ORDER BY "mesesPresentes" DESC
     """, nativeQuery = true)
-    List<ReporteIngresosRecurrentesDTO> ingresosRecurrentes(
+    List<ReporteIngresosRecurrentesProjection> ingresosRecurrentes(
             @Param("cuentaId") Long cuentaId,
             @Param("minMeses") int minMeses);
 
@@ -57,19 +58,19 @@ public interface IngresoRepositorio extends JpaRepository<Ingreso, Long> {
     WHERE e.cuenta_id = :cuentaId
     GROUP BY date_trunc('month', e.fecha))
     SELECT
-    to_char(i.mes, 'YYYY-MM') AS periodo,
-    i.total_ingresos,
-    COALESCE(e.total_egresos, 0) AS total_egresos,
-    (i.total_ingresos - COALESCE(e.total_egresos, 0)) AS ahorro,
+    to_char(i.mes, 'YYYY-MM') AS "mes",
+    i.total_ingresos AS "totalIngresos",
+    COALESCE(e.total_egresos, 0) AS "totalEgresos",
+    (i.total_ingresos - COALESCE(e.total_egresos, 0)) AS "ahorroReal",
     CASE
         WHEN i.total_ingresos > 0 THEN
             ((i.total_ingresos - COALESCE(e.total_egresos, 0)) / i.total_ingresos) * 100
         ELSE 0
-    END AS porcentaje_ahorro
+    END AS "tasaAhorroPct"
     FROM ingresos_mensuales i
     LEFT JOIN egresos_mensuales e ON i.mes = e.mes
     ORDER BY i.mes DESC
     """, nativeQuery = true)
-    List<ReporteAnalisisAhorroDTO> analisisAhorroPotencial(
+    List<ReporteAnalisisAhorroProjection> analisisAhorroPotencial(
             @Param("cuentaId") Long cuentaId);
 }

@@ -36,7 +36,7 @@ public class User {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),

@@ -11,4 +11,5 @@ import java.util.List;
 public interface MetaRepositorio extends JpaRepository<Meta, Long> {
     // HU 18 - Listar metas de ahorro por usuario.
     List<Meta> findByUsuarioIdUsuario(Long idUsuario);
+    void deleteByUsuarioIdUsuario(Long idUsuario);
 }

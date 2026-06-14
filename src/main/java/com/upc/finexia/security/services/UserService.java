@@ -76,8 +76,6 @@ public class UserService {
         user.setRoles(roles);
 
         user = userRepository.save(user);
-        System.out.println(user.getId());
-        System.out.println(user.getUsername());
         return user.getId();
     }
 }

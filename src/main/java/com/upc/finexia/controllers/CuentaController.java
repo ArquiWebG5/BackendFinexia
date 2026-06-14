@@ -1,6 +1,7 @@
 package com.upc.finexia.controllers;
 
 import com.upc.finexia.dtos.CuentaDTO;
+import com.upc.finexia.dtos.ReportePatrimonioNetoDTO;
 import com.upc.finexia.dtos.ReporteResumenFinancieroDTO;
 import com.upc.finexia.services.CuentaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import java.util.List;
 
 // Controlador de Cuentas bancarias del usuario.
 // HU 30 - Consultar dashboard -> GET /api/reporte/resumen/{usuarioId}
+// HU 15 - Reporte de patrimonio neto -> GET /api/reporte/patrimonio-neto/{usuarioId}
 @RestController
 @CrossOrigin(origins = "${ip.frontend}", allowCredentials = "true", exposedHeaders = "Authorization")
 @RequestMapping("/api")
@@ -58,5 +60,11 @@ public class CuentaController {
         return new ResponseEntity<>(
                 cuentaService.resumenFinanciero(usuarioId, desde, hasta),
                 HttpStatus.OK);
+    }
+
+    @GetMapping("/reporte/patrimonio-neto/{usuarioId}")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    public ResponseEntity<ReportePatrimonioNetoDTO> patrimonioNeto(@PathVariable Long usuarioId) {
+        return new ResponseEntity<>(cuentaService.patrimonioNeto(usuarioId), HttpStatus.OK);
     }
 }

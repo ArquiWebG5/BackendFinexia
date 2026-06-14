@@ -1,8 +1,17 @@
 package com.upc.finexia.serviceimpl;
 
 import com.upc.finexia.dtos.UsuarioDTO;
+import com.upc.finexia.entities.Cuenta;
 import com.upc.finexia.entities.Usuario;
+import com.upc.finexia.repositories.CuentaRepositorio;
+import com.upc.finexia.repositories.EgresoRepositorio;
+import com.upc.finexia.repositories.IngresoRepositorio;
+import com.upc.finexia.repositories.InversionRepositorio;
+import com.upc.finexia.repositories.MetaRepositorio;
+import com.upc.finexia.repositories.NotificacionRepositorio;
+import com.upc.finexia.repositories.PortafolioRepositorio;
 import com.upc.finexia.repositories.UsuarioRepositorio;
+import com.upc.finexia.repositories.VentaActivoRepositorio;
 import com.upc.finexia.security.repositories.UserRepository;
 import com.upc.finexia.services.UsuarioService;
 import org.modelmapper.ModelMapper;
@@ -20,6 +29,30 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired
     private UsuarioRepositorio usuariosRepositorio;
+
+    @Autowired
+    private CuentaRepositorio cuentaRepositorio;
+
+    @Autowired
+    private IngresoRepositorio ingresoRepositorio;
+
+    @Autowired
+    private EgresoRepositorio egresoRepositorio;
+
+    @Autowired
+    private InversionRepositorio inversionRepositorio;
+
+    @Autowired
+    private MetaRepositorio metaRepositorio;
+
+    @Autowired
+    private NotificacionRepositorio notificacionRepositorio;
+
+    @Autowired
+    private PortafolioRepositorio portafolioRepositorio;
+
+    @Autowired
+    private VentaActivoRepositorio ventaActivoRepositorio;
 
     @Autowired
     private UserRepository userRepository;
@@ -46,12 +79,31 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     @Transactional
     public void eliminar(Long id) {
+        Usuario usuario = usuariosRepositorio.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        List<Long> cuentaIds = cuentaRepositorio.findByUsuarioIdUsuario(id).stream()
+                .map(Cuenta::getIdCuenta)
+                .collect(Collectors.toList());
+
+        cuentaIds.forEach(cuentaId -> {
+            ventaActivoRepositorio.deleteByCuentaIdCuenta(cuentaId);
+            ingresoRepositorio.deleteByCuentaIdCuenta(cuentaId);
+            egresoRepositorio.deleteByCuentaIdCuenta(cuentaId);
+            inversionRepositorio.deleteByCuentaIdCuenta(cuentaId);
+        });
+        cuentaRepositorio.deleteByUsuarioIdUsuario(id);
+        metaRepositorio.deleteByUsuarioIdUsuario(id);
+        notificacionRepositorio.deleteByUsuarioIdUsuario(id);
+        portafolioRepositorio.deleteByUsuarioIdUsuario(id);
+
         userRepository.findByUsuario_IdUsuario(id).ifPresent(user -> {
             user.getRoles().clear();
+            user.setUsuario(null);
             userRepository.saveAndFlush(user);
             userRepository.delete(user);
         });
-        usuariosRepositorio.deleteById(id);
+        usuariosRepositorio.delete(usuario);
     }
 
     @Override

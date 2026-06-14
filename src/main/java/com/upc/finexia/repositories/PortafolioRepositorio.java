@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface PortafolioRepositorio extends JpaRepository<Portafolio, Long> {
     List<Portafolio> findByUsuarioIdUsuario(Long idUsuario);
+    void deleteByUsuarioIdUsuario(Long idUsuario);
 }

@@ -21,6 +21,7 @@ public interface EgresoRepositorio extends JpaRepository<Egreso, Long> {
     // HU 13 - Clasificar gastos por categoria.
     List<Egreso> findByCuentaIdCuentaAndCategoria(Long idCuenta, String categoria);
     List<Egreso> findByCuentaIdCuentaAndFechaBetween(Long idCuenta, LocalDate inicio, LocalDate fin);
+    void deleteByCuentaIdCuenta(Long idCuenta);
 
 
     // HU 13 / HU 26 - Reporte de gastos agregados por categoria con rango de fechas.
@@ -34,7 +35,8 @@ public interface EgresoRepositorio extends JpaRepository<Egreso, Long> {
             "MIN(e.monto)) " +
             "FROM Egreso e " +
             "WHERE e.cuenta.idCuenta = :cuentaId " +
-            "AND e.fecha BETWEEN :desde AND :hasta " +
+            "AND e.fecha >= :desde " +
+            "AND e.fecha <= :hasta " +
             "GROUP BY e.categoria " +
             "ORDER BY SUM(e.monto) DESC")
     List<ReporteGastosPorCategoriaDTO> gastosPorCategoriaConFechas(

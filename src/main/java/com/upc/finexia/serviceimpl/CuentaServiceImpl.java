@@ -1,15 +1,22 @@
 package com.upc.finexia.serviceimpl;
 
 import com.upc.finexia.dtos.CuentaDTO;
+import com.upc.finexia.dtos.ReportePatrimonioNetoDTO;
 import com.upc.finexia.dtos.ReporteResumenFinancieroDTO;
 import com.upc.finexia.entities.Cuenta;
 import com.upc.finexia.entities.Usuario;
 import com.upc.finexia.repositories.CuentaRepositorio;
+import com.upc.finexia.repositories.EgresoRepositorio;
+import com.upc.finexia.repositories.IngresoRepositorio;
+import com.upc.finexia.repositories.InversionRepositorio;
 import com.upc.finexia.repositories.UsuarioRepositorio;
+import com.upc.finexia.repositories.VentaActivoRepositorio;
+import com.upc.finexia.repositories.projections.ReporteResumenFinancieroProjection;
 import com.upc.finexia.services.CuentaService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,6 +27,18 @@ public class CuentaServiceImpl implements CuentaService {
 
     @Autowired
     private CuentaRepositorio cuentaRepositorio;
+
+    @Autowired
+    private InversionRepositorio inversionRepositorio;
+
+    @Autowired
+    private VentaActivoRepositorio ventaActivoRepositorio;
+
+    @Autowired
+    private IngresoRepositorio ingresoRepositorio;
+
+    @Autowired
+    private EgresoRepositorio egresoRepositorio;
 
     @Autowired
     private UsuarioRepositorio usuariosRepositorio;
@@ -66,13 +85,69 @@ public class CuentaServiceImpl implements CuentaService {
     }
 
     @Override
+    @Transactional
     public void eliminar(Long id) {
+        ventaActivoRepositorio.deleteByCuentaIdCuenta(id);
+        ingresoRepositorio.deleteByCuentaIdCuenta(id);
+        egresoRepositorio.deleteByCuentaIdCuenta(id);
+        inversionRepositorio.deleteByCuentaIdCuenta(id);
         cuentaRepositorio.deleteById(id);
     }
 
     // HU 30 - Consultar dashboard: resumen financiero del hogar por cuenta.
     @Override
     public List<ReporteResumenFinancieroDTO> resumenFinanciero(Long usuarioId, LocalDate desde, LocalDate hasta) {
-        return cuentaRepositorio.resumenFinancieroPorUsuario(usuarioId, desde, hasta);
+        return cuentaRepositorio.resumenFinancieroPorUsuario(
+                        usuarioId,
+                        desdeFiltro(desde),
+                        hastaFiltro(hasta)
+                ).stream()
+                .map(this::toReporteResumenFinancieroDTO)
+                .collect(Collectors.toList());
+    }
+
+    // HU 15 - Generar reporte de patrimonio neto.
+    @Override
+    public ReportePatrimonioNetoDTO patrimonioNeto(Long usuarioId) {
+        Usuario usuario = usuariosRepositorio.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        double totalCuentas = toDouble(cuentaRepositorio.saldoTotalPorUsuario(usuarioId));
+        double totalInversiones = toDouble(inversionRepositorio.valorTotalPorUsuario(usuarioId));
+        return new ReportePatrimonioNetoDTO(
+                usuarioId,
+                usuario.getMonedaPreferida(),
+                totalCuentas,
+                totalInversiones,
+                totalCuentas + totalInversiones
+        );
+    }
+
+    private ReporteResumenFinancieroDTO toReporteResumenFinancieroDTO(ReporteResumenFinancieroProjection reporte) {
+        return new ReporteResumenFinancieroDTO(
+                toLong(reporte.getCuentaId()),
+                reporte.getNombreCuenta(),
+                reporte.getBancoNombre(),
+                reporte.getMoneda(),
+                toDouble(reporte.getTotalIngresos()),
+                toDouble(reporte.getTotalEgresos()),
+                toDouble(reporte.getBalanceNeto()),
+                toDouble(reporte.getSaldoActual())
+        );
+    }
+
+    private Long toLong(Number value) {
+        return value == null ? null : value.longValue();
+    }
+
+    private Double toDouble(Number value) {
+        return value == null ? 0.0 : value.doubleValue();
+    }
+
+    private LocalDate desdeFiltro(LocalDate desde) {
+        return desde == null ? LocalDate.of(1, 1, 1) : desde;
+    }
+
+    private LocalDate hastaFiltro(LocalDate hasta) {
+        return hasta == null ? LocalDate.of(9999, 12, 31) : hasta;
     }
 }

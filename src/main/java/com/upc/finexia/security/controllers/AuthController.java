@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 // Endpoints publicos de autenticacion.
 // HU 01 - Registro de usuario  -> POST /api/registro
 // HU 02 - Inicio de sesion    -> POST /api/authenticate
+// HU 25 - Cerrar sesion       -> POST /api/logout
 @CrossOrigin(origins = "${ip.frontend}", allowCredentials = "true", exposedHeaders = "Authorization")
 @RestController
 @RequestMapping("/api")
@@ -67,5 +68,11 @@ public class AuthController {
     public ResponseEntity<Long> registrar(@RequestBody RegistroUsuarioDTO dto) {
         Long userId = userService.registrar(dto);
         return ResponseEntity.ok(userId);
+    }
+
+    // HU 25 - Cerrar sesion: con JWT stateless el cliente descarta el token.
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        return ResponseEntity.noContent().build();
     }
 }

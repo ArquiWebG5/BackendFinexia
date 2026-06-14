@@ -1,6 +1,7 @@
 package com.upc.finexia.services;
 
 import com.upc.finexia.dtos.CuentaDTO;
+import com.upc.finexia.dtos.ReportePatrimonioNetoDTO;
 import com.upc.finexia.dtos.ReporteResumenFinancieroDTO;
 
 import java.time.LocalDate;
@@ -15,4 +16,5 @@ public interface CuentaService {
     CuentaDTO actualizar(Long id, CuentaDTO cuentaDTO);
     void eliminar(Long id);
     List<ReporteResumenFinancieroDTO> resumenFinanciero(Long usuarioId, LocalDate desde, LocalDate hasta);
+    ReportePatrimonioNetoDTO patrimonioNeto(Long usuarioId);
 }
