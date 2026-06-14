@@ -32,6 +32,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return "/api/authenticate".equals(path)
+                || "/api/registro".equals(path)
+                || "/swagger-ui.html".equals(path)
+                || path.startsWith("/swagger-ui/")
+                || path.startsWith("/v3/api-docs/");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
@@ -42,7 +52,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
-            username = jwtUtil.extractUsername(jwt);
+            try {
+                username = jwtUtil.extractUsername(jwt);
+            } catch (RuntimeException ex) {
+                username = null;
+                jwt = null;
+            }
         }
 
         // Si el token trae username y aun no hay autenticacion en el contexto, validamos y autenticamos.
