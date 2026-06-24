@@ -1,3 +1,5 @@
+-- noinspection SqlNoDataSourceInspection,SqlResolveForFile
+
 -- Roles base de la plataforma Finexia (HU 19 - Compartir acceso familiar).
 -- ROLE_ADMIN -> responsable de finanzas (CRUD financiero).
 -- ROLE_USER  -> familiar con acceso de consulta (solo lectura).
