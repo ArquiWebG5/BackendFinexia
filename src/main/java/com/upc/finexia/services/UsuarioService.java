@@ -13,4 +13,6 @@ public interface UsuarioService {
     void eliminar(Long id);
     List<UsuarioDTO> listar();
     UsuarioDTO buscarPorId(Long id);
+    // Resuelve el perfil del usuario autenticado a partir de su username (JWT). Apoya el login del frontend.
+    UsuarioDTO buscarPorUsername(String username);
 }

@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 // Controlador del perfil de Usuario.
@@ -20,6 +21,13 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    // Perfil del usuario autenticado: el frontend lo usa tras el login para obtener su idUsuario.
+    @GetMapping("/usuario/me")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    public ResponseEntity<UsuarioDTO> perfilActual(Principal principal) {
+        return ResponseEntity.ok(usuarioService.buscarPorUsername(principal.getName()));
+    }
 
     // HU 03 - Visualizar perfil de usuario.
     @GetMapping("/usuario/{id}")
