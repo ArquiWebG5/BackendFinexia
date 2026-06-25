@@ -120,4 +120,13 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         return modelMapper.map(usuario, UsuarioDTO.class);
     }
+
+    // Resuelve el perfil del usuario autenticado (login del frontend): username -> User -> Usuario.
+    @Override
+    public UsuarioDTO buscarPorUsername(String username) {
+        Usuario usuario = userRepository.findByUsername(username)
+                .map(user -> user.getUsuario())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        return modelMapper.map(usuario, UsuarioDTO.class);
+    }
 }
