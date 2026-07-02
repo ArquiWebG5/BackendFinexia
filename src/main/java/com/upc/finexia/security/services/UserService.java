@@ -34,6 +34,21 @@ public class UserService {
         userRepository.save(user);
     }
 
+    // Cambia la contraseña del usuario autenticado tras validar la contraseña actual.
+    @Transactional
+    public void cambiarPassword(String username, String actual, String nueva) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        if (actual == null || !passwordEncoder.matches(actual, user.getPassword())) {
+            throw new RuntimeException("La contraseña actual es incorrecta");
+        }
+        if (nueva == null || nueva.length() < 8) {
+            throw new RuntimeException("La nueva contraseña debe tener al menos 8 caracteres");
+        }
+        user.setPassword(passwordEncoder.encode(nueva));
+        userRepository.save(user);
+    }
+
     @Transactional
     public void grabar(Role role) {
         roleRepository.save(role);
