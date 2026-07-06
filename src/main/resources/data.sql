@@ -18,7 +18,7 @@ ON CONFLICT (correo) DO NOTHING;
 INSERT INTO users(username, password, usuario_id)
 VALUES (
     'user1',
-    '$2a$12$1k34YdrmxBkVborQvZLh2OUvX1S80GVVQjZJ5H55y1eez7XV.nV06',
+    '$2a$10$iYHJ5Fj6VhpoEO745IiLfORNXnThrE8EmAX9hFlSuiqoKLiXggVTy',
     (SELECT id_usuario FROM usuario WHERE correo = 'user1@finexia.local')
 )
 ON CONFLICT (username) DO NOTHING;
@@ -26,7 +26,7 @@ ON CONFLICT (username) DO NOTHING;
 INSERT INTO users(username, password, usuario_id)
 VALUES (
     'admin',
-    '$2a$12$1k34YdrmxBkVborQvZLh2OUvX1S80GVVQjZJ5H55y1eez7XV.nV06',
+    '$2a$10$iYHJ5Fj6VhpoEO745IiLfORNXnThrE8EmAX9hFlSuiqoKLiXggVTy',
     (SELECT id_usuario FROM usuario WHERE correo = 'admin@finexia.local')
 )
 ON CONFLICT (username) DO NOTHING;
