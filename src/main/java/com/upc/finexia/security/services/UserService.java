@@ -5,6 +5,7 @@ import com.upc.finexia.repositories.UsuarioRepositorio;
 import com.upc.finexia.security.dtos.RegistroUsuarioDTO;
 import com.upc.finexia.security.entities.Role;
 import com.upc.finexia.security.entities.User;
+import com.upc.finexia.security.enums.TipoUsuario;
 import com.upc.finexia.security.repositories.RoleRepository;
 import com.upc.finexia.security.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,8 +61,9 @@ public class UserService {
         return 1;
     }
 
-    // HU 01 - Registro de usuario: crea el perfil Usuario, codifica la contrasena y asigna rol ROLE_ADMIN
-    // (responsable de finanzas). Devuelve el id del User creado para que el frontend pueda iniciar sesion.
+    // HU 01 - Registro de usuario: crea el perfil Usuario, codifica la contrasena y asigna el rol
+    // segun el tipo elegido (RESPONSABLE -> ROLE_ADMIN, FAMILIAR -> ROLE_USER).
+    // Devuelve el id del User creado para que el frontend pueda iniciar sesion.
     @Transactional
     public Long registrar(RegistroUsuarioDTO dto) {
         if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
@@ -79,15 +81,18 @@ public class UserService {
         usuario.setFechaRegistro(LocalDate.now());
         usuario = usuarioRepositorio.save(usuario);
 
-        Role rolAdmin = roleRepository.findByName("ROLE_ADMIN")
-                .orElseThrow(() -> new RuntimeException("ROLE_ADMIN no configurado"));
+        // El tipo elegido define el rol de autorizacion. Por compatibilidad, si el frontend no lo
+        // envia se asume RESPONSABLE (responsable de finanzas), que era el comportamiento anterior.
+        TipoUsuario tipoUsuario = dto.getTipoUsuario() != null ? dto.getTipoUsuario() : TipoUsuario.RESPONSABLE;
+        Role rol = roleRepository.findByName(tipoUsuario.getRoleName())
+                .orElseThrow(() -> new RuntimeException(tipoUsuario.getRoleName() + " no configurado"));
 
         User user = new User();
         user.setUsername(dto.getUsername());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setUsuario(usuario);
         Set<Role> roles = new HashSet<>();
-        roles.add(rolAdmin);
+        roles.add(rol);
         user.setRoles(roles);
 
         user = userRepository.save(user);

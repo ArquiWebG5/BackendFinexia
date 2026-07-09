@@ -1,5 +1,6 @@
 package com.upc.finexia.security.dtos;
 
+import com.upc.finexia.security.enums.TipoUsuario;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,4 +22,8 @@ public class RegistroUsuarioDTO {
     private String idioma;
     private String monedaPreferida;
     private String temaUi;
+
+    // HU 01 - Tipo de cuenta elegido al registrarse: RESPONSABLE (responsable de finanzas, ROLE_ADMIN)
+    // o FAMILIAR (familiar con acceso de consulta, ROLE_USER). Si no se envia, se asume RESPONSABLE.
+    private TipoUsuario tipoUsuario;
 }
