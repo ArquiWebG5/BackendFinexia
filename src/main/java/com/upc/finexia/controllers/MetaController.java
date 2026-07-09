@@ -16,7 +16,6 @@ import java.util.List;
 // HU 17 - Visualizar progreso meta  -> GET    /api/meta/{id}        (lectura ADMIN/USER)
 // HU 18 - Listar metas              -> GET    /api/metas/usuario/{usuarioId} (lectura ADMIN/USER)
 @RestController
-@CrossOrigin(origins = "${ip.frontend}", allowCredentials = "true", exposedHeaders = "Authorization")
 @RequestMapping("/api")
 public class MetaController {
 

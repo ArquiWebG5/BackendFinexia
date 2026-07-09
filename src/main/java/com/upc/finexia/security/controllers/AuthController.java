@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 // HU 01 - Registro de usuario  -> POST /api/registro
 // HU 02 - Inicio de sesion    -> POST /api/authenticate
 // HU 25 - Cerrar sesion       -> POST /api/logout
-@CrossOrigin(origins = "${ip.frontend}", allowCredentials = "true", exposedHeaders = "Authorization")
 @RestController
 @RequestMapping("/api")
 public class AuthController {

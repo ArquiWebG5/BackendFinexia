@@ -17,7 +17,6 @@ import java.util.List;
 // HU 30 - Consultar dashboard -> GET /api/reporte/resumen/{usuarioId}
 // HU 15 - Reporte de patrimonio neto -> GET /api/reporte/patrimonio-neto/{usuarioId}
 @RestController
-@CrossOrigin(origins = "${ip.frontend}", allowCredentials = "true", exposedHeaders = "Authorization")
 @RequestMapping("/api")
 public class CuentaController {
 

@@ -19,7 +19,6 @@ import java.util.List;
 // HU 26 - Reporte de gastos                -> GET    /api/reporte/por-categoria, /reporte/top
 // HU 27 - Comparar gastos mensuales        -> GET    /api/reporte/mensuales/{cuentaId}
 @RestController
-@CrossOrigin(origins = "${ip.frontend}", allowCredentials = "true", exposedHeaders = "Authorization")
 @RequestMapping("/api")
 public class EgresoController {
 

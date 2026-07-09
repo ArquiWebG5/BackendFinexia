@@ -23,7 +23,6 @@ import java.util.List;
 // HU 25 - Visualizar portafolio -> GET  /api/reporte/portafolio, /reporte/top-portafolio
 // HU 10 - Registrar venta de activo -> POST /api/inversion/{id}/venta
 @RestController
-@CrossOrigin(origins = "${ip.frontend}", allowCredentials = "true", exposedHeaders = "Authorization")
 @RequestMapping("/api")
 public class InversionController {
 
