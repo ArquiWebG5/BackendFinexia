@@ -63,7 +63,8 @@ public class AuthController {
         return ResponseEntity.ok().headers(responseHeaders).body(authResponseDTO);
     }
 
-    // HU 01 - Registro de usuario: endpoint publico que crea el User + Usuario y asigna ROLE_ADMIN.
+    // HU 01 - Registro de usuario: endpoint publico que crea el User + Usuario y asigna el rol segun
+    // el tipoUsuario elegido (RESPONSABLE -> ROLE_ADMIN, FAMILIAR -> ROLE_USER; por defecto RESPONSABLE).
     @PostMapping("/registro")
     public ResponseEntity<Long> registrar(@RequestBody RegistroUsuarioDTO dto) {
         Long userId = userService.registrar(dto);
