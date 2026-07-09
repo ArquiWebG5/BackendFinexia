@@ -7,10 +7,12 @@ import com.upc.finexia.security.services.CustomUserDetailsService;
 import com.upc.finexia.security.services.UserService;
 import com.upc.finexia.security.util.JwtUtil;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +24,6 @@ import java.util.stream.Collectors;
 // HU 01 - Registro de usuario  -> POST /api/registro
 // HU 02 - Inicio de sesion    -> POST /api/authenticate
 // HU 25 - Cerrar sesion       -> POST /api/logout
-@CrossOrigin(origins = "${ip.frontend}", allowCredentials = "true", exposedHeaders = "Authorization")
 @RestController
 @RequestMapping("/api")
 public class AuthController {
@@ -41,11 +42,17 @@ public class AuthController {
     }
 
     // HU 02 - Inicio de sesion: valida credenciales, genera JWT y devuelve roles.
+    // Credenciales invalidas devuelven 401 (antes la excepcion terminaba en /error como 403/500).
     @PostMapping("/authenticate")
     public ResponseEntity<AuthResponseDTO> createAuthenticationToken(@RequestBody AuthRequestDTO authRequest) throws Exception {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
-        );
+        Authentication authentication;
+        try {
+            authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
+            );
+        } catch (AuthenticationException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getUsername());
         final String token = jwtUtil.generateToken(userDetails);

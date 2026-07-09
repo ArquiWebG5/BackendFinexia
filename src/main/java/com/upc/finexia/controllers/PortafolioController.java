@@ -12,7 +12,6 @@ import java.util.List;
 // Controlador de snapshots de Portafolio.
 // HU 25 - Visualizar portafolio (snapshot agregado del hogar).
 @RestController
-@CrossOrigin(origins = "${ip.frontend}", allowCredentials = "true", exposedHeaders = "Authorization")
 @RequestMapping("/api")
 public class PortafolioController {
 

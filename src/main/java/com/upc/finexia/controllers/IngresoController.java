@@ -19,7 +19,6 @@ import java.util.List;
 // HU 10 - Editar ingreso      -> PUT    /api/ingreso/{id}  (ADMIN)
 // HU 12 - Eliminar ingreso    -> DELETE /api/ingreso/{id}  (ADMIN)
 @RestController
-@CrossOrigin(origins = "${ip.frontend}", allowCredentials = "true", exposedHeaders = "Authorization")
 @RequestMapping("/api")
 public class IngresoController {
 

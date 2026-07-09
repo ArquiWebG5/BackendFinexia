@@ -15,7 +15,6 @@ import java.util.List;
 // HU 04 - Actualizar datos    -> PUT /api/usuario/{id}   (solo responsable de finanzas)
 // HU 05 - Eliminar cuenta     -> DELETE /api/usuario/{id} (solo responsable de finanzas)
 @RestController
-@CrossOrigin(origins = "${ip.frontend}", allowCredentials = "true", exposedHeaders = "Authorization")
 @RequestMapping("/api")
 public class UsuarioController {
 

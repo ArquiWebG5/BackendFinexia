@@ -39,6 +39,9 @@ public class InversionServiceImpl implements InversionService {
                 .orElseThrow(() -> new RuntimeException("Cuenta no encontrada"));
         Inversion entidad = modelMapper.map(inversionDTO, Inversion.class);
         entidad.setCuenta(cuenta);
+        // valorTotal se calcula siempre en el backend (precioCompra * cantidad): el frontend no lo envia,
+        // y los reportes de portafolio filtran por valorTotal > 0, asi que debe quedar siempre correcto.
+        entidad.setValorTotal(calcularValorTotal(entidad.getPrecioCompra(), entidad.getCantidad()));
         if (entidad.getCreadoEn() == null) {
             entidad.setCreadoEn(LocalDate.now());
         }
@@ -65,9 +68,16 @@ public class InversionServiceImpl implements InversionService {
         entidad.setPrecioCompra(inversionDTO.getPrecioCompra());
         entidad.setCantidad(inversionDTO.getCantidad());
         entidad.setFechaCompra(inversionDTO.getFechaCompra());
-        entidad.setValorTotal(inversionDTO.getValorTotal());
+        entidad.setValorTotal(calcularValorTotal(entidad.getPrecioCompra(), entidad.getCantidad()));
         entidad.setCategoria(inversionDTO.getCategoria());
         return modelMapper.map(inversionesRepositorio.save(entidad), InversionDTO.class);
+    }
+
+    // precioCompra * cantidad, con manejo seguro de nulos (evita NPE si algun campo llega vacio).
+    private double calcularValorTotal(Double precioCompra, Double cantidad) {
+        double p = precioCompra != null ? precioCompra : 0.0;
+        double c = cantidad != null ? cantidad : 0.0;
+        return p * c;
     }
 
     // HU 23 - Eliminar inversion.

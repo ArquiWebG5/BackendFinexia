@@ -16,7 +16,6 @@ import java.util.Map;
 
 // Administracion de usuarios y roles del lado de seguridad.
 // HU 19 - Compartir acceso familiar: el responsable (ADMIN) asigna ROLE_USER a otro user (familiar consulta).
-@CrossOrigin(origins = "${ip.frontend}", allowCredentials = "true", exposedHeaders = "Authorization")
 @RestController
 @RequestMapping("/api")
 public class UserController {

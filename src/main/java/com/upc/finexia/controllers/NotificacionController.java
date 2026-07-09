@@ -12,7 +12,6 @@ import java.util.List;
 // Controlador de Notificaciones financieras.
 // HU 29 - Recibir notificaciones financieras (cualquier usuario autenticado).
 @RestController
-@CrossOrigin(origins = "${ip.frontend}", allowCredentials = "true", exposedHeaders = "Authorization")
 @RequestMapping("/api")
 public class NotificacionController {
 

@@ -41,6 +41,8 @@ public interface IngresoRepositorio extends JpaRepository<Ingreso, Long> {
             @Param("minMeses") int minMeses);
 
     // Analisis de ahorro mensual (apoyo a HU 30 - dashboard).
+    // FULL OUTER JOIN: un mes con solo egresos (sin ingresos ese mes) o viceversa
+    // debe seguir apareciendo en el reporte, no desaparecer (LEFT JOIN perdia esos meses).
     @Query(value = """
     WITH ingresos_mensuales AS (
     SELECT
@@ -58,18 +60,18 @@ public interface IngresoRepositorio extends JpaRepository<Ingreso, Long> {
     WHERE e.cuenta_id = :cuentaId
     GROUP BY date_trunc('month', e.fecha))
     SELECT
-    to_char(i.mes, 'YYYY-MM') AS "mes",
-    i.total_ingresos AS "totalIngresos",
+    to_char(COALESCE(i.mes, e.mes), 'YYYY-MM') AS "mes",
+    COALESCE(i.total_ingresos, 0) AS "totalIngresos",
     COALESCE(e.total_egresos, 0) AS "totalEgresos",
-    (i.total_ingresos - COALESCE(e.total_egresos, 0)) AS "ahorroReal",
+    (COALESCE(i.total_ingresos, 0) - COALESCE(e.total_egresos, 0)) AS "ahorroReal",
     CASE
-        WHEN i.total_ingresos > 0 THEN
-            ((i.total_ingresos - COALESCE(e.total_egresos, 0)) / i.total_ingresos) * 100
+        WHEN COALESCE(i.total_ingresos, 0) > 0 THEN
+            ((COALESCE(i.total_ingresos, 0) - COALESCE(e.total_egresos, 0)) / i.total_ingresos) * 100
         ELSE 0
     END AS "tasaAhorroPct"
     FROM ingresos_mensuales i
-    LEFT JOIN egresos_mensuales e ON i.mes = e.mes
-    ORDER BY i.mes DESC
+    FULL OUTER JOIN egresos_mensuales e ON i.mes = e.mes
+    ORDER BY COALESCE(i.mes, e.mes) DESC
     """, nativeQuery = true)
     List<ReporteAnalisisAhorroProjection> analisisAhorroPotencial(
             @Param("cuentaId") Long cuentaId);
