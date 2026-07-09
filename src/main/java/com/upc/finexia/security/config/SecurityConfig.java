@@ -59,6 +59,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // HU 01 - Registro y HU 02 - Login son endpoints publicos.
                         .requestMatchers("/api/authenticate", "/api/registro").permitAll()
+                        // /error debe ser publico: si esta protegido, cualquier excepcion interna (500)
+                        // o ruta inexistente (404) se enmascara como un 403 vacio y es imposible diagnosticar.
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
                 )
